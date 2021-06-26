@@ -1,7 +1,7 @@
 C:\Users\fortia\source\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\bin\Debug\Croquis(.NET Framework).exe.config
+C:\Users\fortia\source\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\bin\Debug\Croquis(.NET Framework).exe.manifest
+C:\Users\fortia\source\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\bin\Debug\Croquis(.NET Framework).application
 C:\Users\fortia\source\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\bin\Debug\Croquis(.NET Framework).exe
-C:\Users\fortia\source\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\bin\Debug\Croquis(.NET Framework).pdb
-C:\Users\fortia\source\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\Debug\Croquis(.NET Framework).csproj.AssemblyReference.cache
 C:\Users\fortia\source\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\Debug\MainWindow.g.cs
 C:\Users\fortia\source\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\Debug\App.g.cs
 C:\Users\fortia\source\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\Debug\Croquis(.NET Framework)_MarkupCompile.cache
@@ -11,9 +11,6 @@ C:\Users\fortia\source\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj
 C:\Users\fortia\source\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\Debug\Croquis_.NET_Framework_.Properties.Resources.resources
 C:\Users\fortia\source\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\Debug\Croquis(.NET Framework).csproj.GenerateResource.cache
 C:\Users\fortia\source\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\Debug\Croquis(.NET Framework).csproj.CoreCompileInputs.cache
-C:\Users\fortia\source\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\Debug\Croquis(.NET Framework).exe
-C:\Users\fortia\source\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\Debug\Croquis(.NET Framework).pdb
-C:\Users\fortia\source\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\bin\Debug\Croquis(.NET Framework).exe.manifest
-C:\Users\fortia\source\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\bin\Debug\Croquis(.NET Framework).application
 C:\Users\fortia\source\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\Debug\Croquis(.NET Framework).exe.manifest
 C:\Users\fortia\source\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\Debug\Croquis(.NET Framework).application
+C:\Users\fortia\source\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\Debug\Croquis(.NET Framework).exe
