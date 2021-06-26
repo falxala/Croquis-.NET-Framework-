@@ -1,0 +1,54 @@
+﻿<Window x:Name="mainwindow" x:Class="Croquis_.NET_Framework_.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Croquis_.NET_Framework_"
+        mc:Ignorable="d"
+         Title="croquis" Height="450" Width="800" AllowDrop="True" PreviewKeyDown="mainwindow_PreviewKeyDown">
+    <Window.ContextMenu>
+        <ContextMenu>
+                <MenuItem Header="表示時間">
+                    <MenuItem x:Name="item10" Header="10秒" Click="item10_Click"/>
+                    <MenuItem x:Name="item30" Header="30秒" Click="item30_Click"/>
+                    <MenuItem x:Name="item60" Header="60秒" Click="item60_Click"/>
+                    <MenuItem x:Name="item90" Header="90秒" Click="item90_Click"/>
+                    <MenuItem x:Name="item180" Header="3分" Click="item180_Click"/>
+                    <MenuItem x:Name="item300" Header="5分" Click="item300_Click"/>
+                </MenuItem>
+                <MenuItem Header="一時停止/再開(space)" Click="MenuItem_Click"/>
+                <MenuItem Header="グレースケール" Click="GrayScale"/>
+                <MenuItem Header="グリッド ON/OFF" Click="Grid"/>
+                <MenuItem Header="背景色">
+                    <MenuItem x:Name="White_Background" Header="白" Click="White"/>
+                    <MenuItem x:Name="Black_Background" Header="黒" Click="Black"/>
+                </MenuItem>
+                <MenuItem x:Name="reset" Header="リセット" Click="reset_Click"/>
+            </ContextMenu>
+    </Window.ContextMenu>
+    
+    <Grid Margin="0,0,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="7"/>
+        </Grid.RowDefinitions>
+
+        
+        
+        <Label x:Name="text" Content="Drag &amp; Drop" FontFamily="Arial Black" HorizontalContentAlignment="Center" FontSize="36" UseLayoutRounding="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Height="51" VerticalAlignment="Center" HorizontalAlignment="Center" Width="252"/>
+
+
+        <Image x:Name="image_" AllowDrop="True" PreviewDragEnter="Image_PreviewDragEnter" PreviewDragOver="Image_PreviewDragOver" PreviewDrop="Image_PreviewDrop">
+
+        </Image>
+
+        <Canvas Name="canvas"
+                SnapsToDevicePixels="True"
+                Loaded="canvas_Loaded"
+                SizeChanged="canvas_SizeChanged" Visibility="Hidden">
+        </Canvas>
+        
+        <ProgressBar x:Name="progress" Margin="0,0,0,0" Grid.Row="1"/>
+
+    </Grid>
+</Window>
