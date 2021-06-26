@@ -14,6 +14,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Collections.ObjectModel;
 using System.Drawing;
+using System.IO;
+using Path = System.Windows.Shapes.Path;
 
 namespace Croquis_.NET_Framework_
 {
@@ -23,11 +25,13 @@ namespace Croquis_.NET_Framework_
     public partial class MainWindow : Window
     {
         string CurrentImage = "";
+        int Count = 0;
         System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
         int Interval_time = 30;
         bool pause_flag = false;
         bool reset_flag = false;
         bool grayscale_flag = false;
+        Brush background_Color = Brushes.White;
 
         private ObservableCollection<string> FileList;
         ImageSource imgsourse = new RenderTargetBitmap(525,       // Imageの幅
@@ -65,6 +69,12 @@ namespace Croquis_.NET_Framework_
 
         private async void Image_PreviewDrop(object sender, DragEventArgs e)
         {
+            for (int t = 3; t > 0; t--)
+            {
+                text_pop(true, t.ToString());
+                await Task.Delay(1000);
+            }
+
             if (e.Data.GetDataPresent(DataFormats.FileDrop) && sw.IsRunning == false)
             {
                 //ファイル名を取得
@@ -77,53 +87,80 @@ namespace Croquis_.NET_Framework_
                     fileNames = System.IO.Directory.GetFiles(@fileNames[0], "*", System.IO.SearchOption.TopDirectoryOnly);
                 }
 
-                foreach (var name in fileNames)
-                {
-                    text_pop(false, "");
-                    FileList.Add(name);
-                }
-
-                reset_flag = false;
-
-                try
-                {
-                    foreach (string image_name in FileList)
-                    {
-                        CurrentImage = image_name;
-                        await Slideshow(image_name, Interval_time);
-                        if (reset_flag == true)
-                            throw new Exception();
-                    }
-                    image_.Source = imgsourse;
-                    text_pop(true, "終了！");
-                }
-                catch (Exception)
-                {
-                    Reset();
-                }
-                finally
-                {
-                    FileList.Clear();
-                }
+                await Slideshow(fileNames);
             }
 
         }
 
-        private async Task Slideshow(string image_name, double time)
+        private async Task Slideshow(string[] fileNames)
         {
-            time = time * 1000;
+
+            foreach (var name in fileNames)
+            {
+                text_pop(false, "");
+                FileList.Add(name);
+            }
+
+            reset_flag = false;
+
             try
             {
-                BitmapImage imageSource = new BitmapImage(new Uri(image_name));
+                Count = 0;
+                while (Count < FileList.Count)
+                {
+                    string image_name = FileList[Count];
+                    CurrentImage = image_name;
+                    Count++;
+                    await showImage(image_name, Interval_time);
+                    if (reset_flag == true)
+                    {
+                        throw new Exception();
+                    }
+                }
+                image_.Source = imgsourse;
+                text_pop(true, "終了！");
+            }
+            catch (Exception)
+            {
+                Reset();
+            }
+            finally
+            {
+                FileList.Clear();
+            }
+        }
+
+        private void setImage(string image_name)
+        {
+            CurrentImage = image_name;
+            try
+            {
+                BitmapImage bmpImage = new BitmapImage();
+                using (FileStream stream = File.OpenRead(image_name))
+                {
+                    bmpImage.BeginInit();
+                    bmpImage.CacheOption = BitmapCacheOption.OnLoad;
+                    bmpImage.StreamSource = stream;
+                    bmpImage.EndInit();
+                    stream.Close();
+                }
                 if (grayscale_flag)
-                    image_.Source = ToGrayScale(imageSource);
+                    image_.Source = ToGrayScale(bmpImage);
                 else
-                    image_.Source = imageSource;
+                    image_.Source = bmpImage;
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 //text_pop(true,"非対応ファイルが含まれています");
             }
+        }
+
+        private async Task showImage(string image_name, double time)
+        {
+            time = time * 1000;
+
+            setImage(image_name);
             sw.Reset();
             sw.Start();
             while (sw.ElapsedMilliseconds <= time && reset_flag == false)
@@ -132,7 +169,7 @@ namespace Croquis_.NET_Framework_
 
                 await Task.Delay(10);
                 progress.Value = sw.ElapsedMilliseconds / time * 100;
-                mainwindow.Title = ((time - sw.ElapsedMilliseconds) / 1000).ToString("f1");
+                mainwindow.Title = "[ " + Count + " out of " + FileList.Count + " ]  remaining : " + ((time - sw.ElapsedMilliseconds) / 1000).ToString("f1");
             }
             sw.Stop();
         }
@@ -168,7 +205,40 @@ namespace Croquis_.NET_Framework_
             }
 
             if (e.Key == Key.Space == true)
-                pause_flag = !pause_flag;
+            {
+                Pause(null,null);
+            }
+
+            if (e.Key == Key.G == true)
+            {
+                Grid(null,null);
+            }
+
+            if (e.Key == Key.B == true)
+            {
+                if (background_Color == Brushes.White)
+                    Black(null, null);
+                else
+                    White(null, null);
+            }
+
+            if (e.Key == Key.S == true || e.Key == Key.C == true)
+            {
+                GrayScale(null,null);
+            }
+
+            if (e.Key == Key.Left == true && Count > 1)
+            {
+                Count--;
+                setImage(FileList[Count-1]);
+                sw.Reset();
+            }
+            if (e.Key == Key.Right == true && Count < FileList.Count)
+            {
+                Count++;
+                setImage(FileList[Count-1]);
+                sw.Reset();
+            }
         }
 
         private void Reset()
@@ -226,9 +296,15 @@ namespace Croquis_.NET_Framework_
             mainwindow.Title = "set:" + Interval_time;
         }
 
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        private void Pause(object sender, RoutedEventArgs e)
         {
             pause_flag = !pause_flag;
+            if (pause_flag == true)
+            {
+                mainwindow.Background = Brushes.Gray;
+            }
+            else
+                mainwindow.Background = background_Color;
         }
 
         private void reset_Click(object sender, RoutedEventArgs e)
@@ -239,13 +315,15 @@ namespace Croquis_.NET_Framework_
 
         private void Black(object sender, RoutedEventArgs e)
         {
-            mainwindow.Background = Brushes.Black;
+            background_Color = Brushes.Black;
+            mainwindow.Background = background_Color;
             text.Foreground = Brushes.White;
         }
 
         private void White(object sender, RoutedEventArgs e)
         {
-            mainwindow.Background = Brushes.White;
+            background_Color = Brushes.White;
+            mainwindow.Background = background_Color;
             text.Foreground = Brushes.Black;
         }
 
@@ -322,6 +400,9 @@ namespace Croquis_.NET_Framework_
         {
             try
             {
+                if (reset_flag == true)
+                    throw new Exception();
+
                 grayscale_flag = !grayscale_flag;
                 if (grayscale_flag == true)
                     image_.Source = ToGrayScale(new BitmapImage(new Uri(CurrentImage)));

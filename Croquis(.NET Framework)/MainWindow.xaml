@@ -16,8 +16,8 @@
                     <MenuItem x:Name="item180" Header="3分" Click="item180_Click"/>
                     <MenuItem x:Name="item300" Header="5分" Click="item300_Click"/>
                 </MenuItem>
-                <MenuItem Header="一時停止/再開(space)" Click="MenuItem_Click"/>
-                <MenuItem Header="グレースケール" Click="GrayScale"/>
+                <MenuItem Header="一時停止/再開" Click="Pause"/>
+                <MenuItem Header="グレースケール ON/OFF" Click="GrayScale"/>
                 <MenuItem Header="グリッド ON/OFF" Click="Grid"/>
                 <MenuItem Header="背景色">
                     <MenuItem x:Name="White_Background" Header="白" Click="White"/>
@@ -35,7 +35,7 @@
 
         
         
-        <Label x:Name="text" Content="Drag &amp; Drop" FontFamily="Arial Black" HorizontalContentAlignment="Center" FontSize="36" UseLayoutRounding="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Height="51" VerticalAlignment="Center" HorizontalAlignment="Center" Width="252"/>
+        <Label x:Name="text" Content="Drag &amp; Drop" FontFamily="Arial Black" HorizontalContentAlignment="Center" FontSize="48" UseLayoutRounding="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
 
         <Image x:Name="image_" AllowDrop="True" PreviewDragEnter="Image_PreviewDragEnter" PreviewDragOver="Image_PreviewDragOver" PreviewDrop="Image_PreviewDrop">

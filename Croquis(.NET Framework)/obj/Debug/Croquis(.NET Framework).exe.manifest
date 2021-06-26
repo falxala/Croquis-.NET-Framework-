@@ -42,14 +42,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Croquis(.NET Framework).exe" size="19432">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Croquis(.NET Framework).exe" size="20456">
       <assemblyIdentity name="Croquis(.NET Framework)" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>kmm/s7FswSQpi/hpEwJICQRMehLMCcpRaVbOPlK+Zz8=</dsig:DigestValue>
+        <dsig:DigestValue>vTg7iB1X6bZL/8qubFv3yxj53RrpsD4ffiGfJy1uWfc=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
