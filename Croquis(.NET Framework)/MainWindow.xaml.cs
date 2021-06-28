@@ -1,37 +1,80 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Collections.ObjectModel;
-using System.Drawing;
 using System.IO;
 using Path = System.Windows.Shapes.Path;
+using Microsoft.Win32;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace Croquis_.NET_Framework_
 {
-    /// <summary>
-    /// MainWindow.xaml の相互作用ロジック
-    /// </summary>
-    public partial class MainWindow : Window
+
+    public class ViewModel : INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        private string message = "";
+        public string Message
+        {
+            get
+            {
+                return this.message;
+            }
+            set
+            {
+                if (value != this.message)
+                {
+                    this.message = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
+        private string info_message = "";
+        public string info_Message
+        {
+            get
+            {
+                return this.info_message;
+            }
+            set
+            {
+                if (value != this.info_message)
+                {
+                    this.info_message = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+    }
+
+/// <summary>
+/// MainWindow.xaml の相互作用ロジック
+/// </summary>
+public partial class MainWindow : Window
     {
         string CurrentImage = "";
         int Count = 0;
         System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-        int Interval_time = 30;
+        double Interval_time = 30;
+        int Update_interval = 15;
         bool pause_flag = false;
-        bool reset_flag = false;
+        bool reset_flag = true;
         bool grayscale_flag = false;
         Brush background_Color = Brushes.White;
+        ViewModel navigate_vm = new ViewModel();
 
         private ObservableCollection<string> FileList;
         ImageSource imgsourse = new RenderTargetBitmap(525,       // Imageの幅
@@ -44,8 +87,16 @@ namespace Croquis_.NET_Framework_
             InitializeComponent();
             FileList = new ObservableCollection<string>();
             image_.Source = imgsourse;
-            text_pop(true, "Drag & Drop");
             BuildView();
+            progressbar.Visibility = Visibility.Hidden;
+
+            text.DataContext = navigate_vm;
+            navigate_vm.Message = "Drop files here";
+            text_pop(true);
+
+            info_label.DataContext = navigate_vm;
+            navigate_vm.info_Message = "--";
+
         }
 
 
@@ -67,41 +118,48 @@ namespace Croquis_.NET_Framework_
             e.Handled = true;
         }
 
-        private async void Image_PreviewDrop(object sender, DragEventArgs e)
+        private  void Image_PreviewDrop(object sender, DragEventArgs e)
         {
+            //ファイル名を取得
+            var fileNames = (string[])e.Data.GetData(DataFormats.FileDrop);
+            if (e.Data.GetDataPresent(DataFormats.FileDrop) && sw.IsRunning == false)
+            {
+                StartSlideshow(fileNames);
+            }
+        }
+
+        private async void StartSlideshow(string[] fileNames)
+        {
+            progressbar.Visibility = Visibility.Visible;
+            reset_flag = false;
+
             for (int t = 3; t > 0; t--)
             {
-                text_pop(true, t.ToString());
+                text_pop(true);
+                navigate_vm.Message = t.ToString();
+
                 await Task.Delay(1000);
             }
 
-            if (e.Data.GetDataPresent(DataFormats.FileDrop) && sw.IsRunning == false)
+            //最初の1つ目のドロップフォルダなら
+            if (System.IO.Directory.Exists(fileNames[0]))
             {
-                //ファイル名を取得
-                var fileNames = (string[])e.Data.GetData(DataFormats.FileDrop);
-
-                //最初の1つ目のドロップフォルダなら
-                if (System.IO.Directory.Exists(fileNames[0]))
-                {
-                    //フォルダ内のファイル名を取得
-                    fileNames = System.IO.Directory.GetFiles(@fileNames[0], "*", System.IO.SearchOption.TopDirectoryOnly);
-                }
-
-                await Slideshow(fileNames);
+                //フォルダ内のファイル名を取得
+                fileNames = System.IO.Directory.GetFiles(@fileNames[0], "*", System.IO.SearchOption.TopDirectoryOnly);
             }
 
+            await Slideshow(fileNames);
         }
+
 
         private async Task Slideshow(string[] fileNames)
         {
 
             foreach (var name in fileNames)
             {
-                text_pop(false, "");
+                text_pop(false);
                 FileList.Add(name);
             }
-
-            reset_flag = false;
 
             try
             {
@@ -111,14 +169,15 @@ namespace Croquis_.NET_Framework_
                     string image_name = FileList[Count];
                     CurrentImage = image_name;
                     Count++;
-                    await showImage(image_name, Interval_time);
+                    await showImage(image_name);
                     if (reset_flag == true)
                     {
                         throw new Exception();
                     }
                 }
                 image_.Source = imgsourse;
-                text_pop(true, "終了！");
+                text_pop(true);
+                navigate_vm.Message = "Finish!";
             }
             catch (Exception)
             {
@@ -130,7 +189,7 @@ namespace Croquis_.NET_Framework_
             }
         }
 
-        private void setImage(string image_name)
+        private void SetImage(string image_name)
         {
             CurrentImage = image_name;
             try
@@ -156,30 +215,34 @@ namespace Croquis_.NET_Framework_
             }
         }
 
-        private async Task showImage(string image_name, double time)
+        private async Task showImage(string image_name)
         {
-            time = time * 1000;
-
-            setImage(image_name);
+            SetImage(image_name);
             sw.Reset();
             sw.Start();
-            while (sw.ElapsedMilliseconds <= time && reset_flag == false)
+            string old_info = "--";
+            string current_info;
+            while (sw.ElapsedMilliseconds <= Interval_time * 1000 && reset_flag == false)
             {
                 pause();
 
-                await Task.Delay(10);
-                progress.Value = sw.ElapsedMilliseconds / time * 100;
-                mainwindow.Title = "[ " + Count + " out of " + FileList.Count + " ]  remaining : " + ((time - sw.ElapsedMilliseconds) / 1000).ToString("f1");
+                await Task.Delay(Update_interval);//delayの精度が15ms
+                progressbar.Value = sw.ElapsedMilliseconds / (Interval_time * 1000) * 100;
+                current_info = "[ " + Count + " out of " + FileList.Count + " ]  remaining : " + ((Interval_time * 1000 - sw.ElapsedMilliseconds) / 1000).ToString("f0");
+                if(current_info != old_info)
+                {
+                    navigate_vm.info_Message = current_info;
+                }
+                old_info = current_info;
             }
             sw.Stop();
         }
 
-        private void text_pop(bool on_off, string content)
+        private void text_pop(bool on_off)
         {
             if (on_off)
             {
                 text.Visibility = Visibility.Visible;
-                text.Content = content;
             }
             else
             {
@@ -191,17 +254,13 @@ namespace Croquis_.NET_Framework_
         {
             if (e.Key == Key.Enter == true)
             {
-                if (WindowState == WindowState.Normal)
-                {
-                    //適用する順番でタスクバーが隠れるか隠れないかが決まる
-                    WindowStyle = WindowStyle.None;
-                    WindowState = WindowState.Maximized;
-                }
-                else
-                {
-                    WindowState = WindowState.Normal;
-                    WindowStyle = WindowStyle.SingleBorderWindow;
-                }
+                FullScreen_Click(null,null);
+            }
+
+            if (e.Key == Key.Escape == true)
+            {
+                if (WindowState == WindowState.Maximized)
+                    FullScreen_Click(null, null);
             }
 
             if (e.Key == Key.Space == true)
@@ -212,6 +271,20 @@ namespace Croquis_.NET_Framework_
             if (e.Key == Key.G == true)
             {
                 Grid(null,null);
+            }
+
+            if (e.Key == Key.Oem4)
+            {
+                if (grid_size < 480)
+                grid_size += 4;
+                BuildView();
+            }
+
+            if (e.Key == Key.Oem6)
+            {
+                if (grid_size > 10)
+                    grid_size -= 4;
+                BuildView();
             }
 
             if (e.Key == Key.B == true)
@@ -227,27 +300,47 @@ namespace Croquis_.NET_Framework_
                 GrayScale(null,null);
             }
 
-            if (e.Key == Key.Left == true && Count > 1)
+            if (e.Key == Key.P == true)
+            {
+                menuProgress_Click(null, null);
+            }
+
+            if (e.Key == Key.R == true)
+            {
+                if (sw.IsRunning)
+                    sw.Restart();
+            }
+
+            if (e.Key == Key.I == true)
+            {
+                info_Click(null,null);
+            }
+
+            if (e.Key == Key.Left == true && Count > 1 && FileList.Count != 0)
             {
                 Count--;
-                setImage(FileList[Count-1]);
+                SetImage(FileList[Count - 1]);
                 sw.Reset();
             }
-            if (e.Key == Key.Right == true && Count < FileList.Count)
+            if (e.Key == Key.Right == true && Count < FileList.Count && FileList.Count != 0)
             {
                 Count++;
-                setImage(FileList[Count-1]);
+                SetImage(FileList[Count - 1]);
                 sw.Reset();
             }
+
+
         }
 
         private void Reset()
         {
             sw.Reset();
-            text_pop(true, "Drag & Drop");
+            text_pop(true);
+            navigate_vm.Message = "Drop files here";
             image_.Source = imgsourse;
-            mainwindow.Title = "croquis";
-            progress.Value = 0;
+            navigate_vm.info_Message = "--";
+            progressbar.Value = 0;
+            progressbar.Visibility = Visibility.Hidden;
             grayscale_flag = false;
             pause_flag = false;
         }
@@ -263,37 +356,43 @@ namespace Croquis_.NET_Framework_
         private void item10_Click(object sender, RoutedEventArgs e)
         {
             Interval_time = 10;
-            mainwindow.Title = "set:" + Interval_time;
+            Update_interval = 15;
+            navigate_vm.info_Message = "set:" + Interval_time;
         }
 
         private void item30_Click(object sender, RoutedEventArgs e)
         {
             Interval_time = 30;
-            mainwindow.Title = "set:" + Interval_time;
+            Update_interval = 15;
+            navigate_vm.info_Message = "set:" + Interval_time;
         }
 
         private void item60_Click(object sender, RoutedEventArgs e)
         {
             Interval_time = 60;
-            mainwindow.Title = "set:" + Interval_time;
+            Update_interval = 20;
+            navigate_vm.info_Message = "set:" + Interval_time;
         }
 
         private void item90_Click(object sender, RoutedEventArgs e)
         {
             Interval_time = 90;
-            mainwindow.Title = "set:" + Interval_time;
+            Update_interval = 20;
+            navigate_vm.info_Message = "set:" + Interval_time;
         }
 
         private void item180_Click(object sender, RoutedEventArgs e)
         {
             Interval_time = 180;
-            mainwindow.Title = "set:" + Interval_time;
+            Update_interval = 50;
+            navigate_vm.info_Message = "set:" + Interval_time;
         }
 
         private void item300_Click(object sender, RoutedEventArgs e)
         {
             Interval_time = 300;
-            mainwindow.Title = "set:" + Interval_time;
+            Update_interval = 50;
+            navigate_vm.info_Message = "set:" + Interval_time;
         }
 
         private void Pause(object sender, RoutedEventArgs e)
@@ -329,14 +428,14 @@ namespace Croquis_.NET_Framework_
 
 
         //https://zawapro.com/?p=988
-        private const int GRID_SIZE = 100;
+        private  int grid_size = 96;
         private ScaleTransform scaleTransform = new ScaleTransform();
         private void BuildView()
         {
             canvas.Children.Clear();
 
             // 縦線
-            for (int i = 0; i < canvas.ActualWidth; i += GRID_SIZE)
+            for (int i = 0; i < canvas.ActualWidth; i += grid_size)
             {
                 Path path = new Path()
                 {
@@ -351,7 +450,7 @@ namespace Croquis_.NET_Framework_
             }
 
             // 横線
-            for (int i = 0; i < canvas.ActualHeight; i += GRID_SIZE)
+            for (int i = 0; i < canvas.ActualHeight; i += grid_size)
             {
                 Path path = new Path()
                 {
@@ -384,6 +483,14 @@ namespace Croquis_.NET_Framework_
                 canvas.Visibility = Visibility.Hidden;
         }
 
+        private void info_Click(object sender, RoutedEventArgs e)
+        {
+            if (info_label.Visibility == Visibility.Visible)
+                info_label.Visibility = Visibility.Hidden;
+            else
+                info_label.Visibility = Visibility.Visible;
+        }
+
         private BitmapSource ToGrayScale( BitmapSource bitmap)
         {
             FormatConvertedBitmap newFormatedBitmapSource = new FormatConvertedBitmap();
@@ -410,6 +517,66 @@ namespace Croquis_.NET_Framework_
                     image_.Source = new BitmapImage(new Uri(CurrentImage));
             }
             catch { }
+        }
+
+        private void mainwindow_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                if (e.GetPosition(this).Y > SystemParameters.CaptionHeight)
+                    DragMove();
+            }
+            catch { }
+        }
+
+        private void mainwindow_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (!reset_flag)
+                return;
+            var dialog = new OpenFileDialog();
+
+            dialog.Multiselect = true;
+            // ファイルの種類を設定
+            dialog.Filter = "JPEG |*.jpeg;*.jpg;|PNG |*.png;|WEBP |*.webp;|全てのファイル (*.*)|*.*";
+            dialog.FilterIndex = 4;
+
+            // ダイアログを表示する
+            if (dialog.ShowDialog() == true)
+            {
+                StartSlideshow(dialog.FileNames);
+            }
+        }
+
+        private void FullScreen_Click(object sender, RoutedEventArgs e)
+        {
+            if (WindowState == WindowState.Normal)
+            {
+                //適用する順番でタスクバーが隠れるか隠れないかが決まる
+                WindowStyle = WindowStyle.None;
+                WindowState = WindowState.Maximized;
+            }
+            else
+            {
+                WindowState = WindowState.Normal;
+                WindowStyle = WindowStyle.SingleBorderWindow;
+            }
+        }
+
+        private void menuProgress_Click(object sender, RoutedEventArgs e)
+        {
+            if (reset_flag == false)
+            {
+                if (progressbar.Visibility == Visibility.Visible)
+                {
+                    progressbar.Visibility = Visibility.Hidden;
+                    RowDefinition.Height = new GridLength(0);
+                }
+                else
+                {
+                    progressbar.Visibility = Visibility.Visible;
+                    RowDefinition.Height = new GridLength(7);
+                }
+            }
         }
     }
 }

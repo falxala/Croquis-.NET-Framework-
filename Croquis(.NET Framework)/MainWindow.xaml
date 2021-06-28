@@ -5,37 +5,42 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Croquis_.NET_Framework_"
         mc:Ignorable="d"
-         Title="croquis" Height="450" Width="800" AllowDrop="True" PreviewKeyDown="mainwindow_PreviewKeyDown">
-    <Window.ContextMenu>
-        <ContextMenu>
-                <MenuItem Header="表示時間">
-                    <MenuItem x:Name="item10" Header="10秒" Click="item10_Click"/>
-                    <MenuItem x:Name="item30" Header="30秒" Click="item30_Click"/>
-                    <MenuItem x:Name="item60" Header="60秒" Click="item60_Click"/>
-                    <MenuItem x:Name="item90" Header="90秒" Click="item90_Click"/>
-                    <MenuItem x:Name="item180" Header="3分" Click="item180_Click"/>
-                    <MenuItem x:Name="item300" Header="5分" Click="item300_Click"/>
-                </MenuItem>
-                <MenuItem Header="一時停止/再開" Click="Pause"/>
-                <MenuItem Header="グレースケール ON/OFF" Click="GrayScale"/>
-                <MenuItem Header="グリッド ON/OFF" Click="Grid"/>
-                <MenuItem Header="背景色">
-                    <MenuItem x:Name="White_Background" Header="白" Click="White"/>
-                    <MenuItem x:Name="Black_Background" Header="黒" Click="Black"/>
-                </MenuItem>
-                <MenuItem x:Name="reset" Header="リセット" Click="reset_Click"/>
-            </ContextMenu>
-    </Window.ContextMenu>
+        xmlns:fw="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
+         Title="croquis" Height="450" Width="800" AllowDrop="True" PreviewKeyDown="mainwindow_PreviewKeyDown" PreviewMouseLeftButtonDown="mainwindow_PreviewMouseLeftButtonDown" PreviewMouseDoubleClick="mainwindow_PreviewMouseDoubleClick">
     
+    <Window.ContextMenu>
+        <fw:AcrylicContextMenu>
+            <MenuItem Header="表示時間">
+                <MenuItem x:Name="item10" Header="10秒" Click="item10_Click"/>
+                <MenuItem x:Name="item30" Header="30秒" Click="item30_Click"/>
+                <MenuItem x:Name="item60" Header="60秒" Click="item60_Click"/>
+                <MenuItem x:Name="item90" Header="90秒" Click="item90_Click"/>
+                <MenuItem x:Name="item180" Header="3分" Click="item180_Click"/>
+                <MenuItem x:Name="item300" Header="5分" Click="item300_Click"/>
+            </MenuItem>
+            <MenuItem Header="一時停止/再開" Click="Pause" InputGestureText="Space"/>
+            <MenuItem x:Name="FullScreen" Header="全画面表示/解除" Click="FullScreen_Click" InputGestureText="Enter"/>
+            <MenuItem Header="グレースケール ON/OFF" Click="GrayScale" InputGestureText="C or S"/>
+            <MenuItem Header="グリッド ON/OFF" Click="Grid" InputGestureText="G"/>
+            <MenuItem x:Name="MenuInfo" Header="進捗状況 ON/OFF" Click="info_Click" InputGestureText="I"/>
+            <MenuItem x:Name="menuProgress" Header="プログレスバー ON/OFF" Click="menuProgress_Click" InputGestureText="P"/>
+            <MenuItem Header="背景色" InputGestureText="B">
+                <MenuItem x:Name="White_Background" Header="白" Click="White"/>
+                <MenuItem x:Name="Black_Background" Header="黒" Click="Black"/>
+            </MenuItem>
+            <MenuItem x:Name="reset" Header="リセット" Click="reset_Click"/>
+        </fw:AcrylicContextMenu>
+    </Window.ContextMenu>
+
     <Grid Margin="0,0,0,0">
         <Grid.RowDefinitions>
             <RowDefinition/>
-            <RowDefinition Height="7"/>
+            <RowDefinition x:Name="RowDefinition" Height="7"/>
         </Grid.RowDefinitions>
 
-        
-        
-        <Label x:Name="text" Content="Drag &amp; Drop" FontFamily="Arial Black" HorizontalContentAlignment="Center" FontSize="48" UseLayoutRounding="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+
+
+        <Label x:Name="text" Content="{Binding  Message}" FontFamily="Arial Black" HorizontalContentAlignment="Center" FontSize="48" UseLayoutRounding="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black" Opacity="0.8"/>
 
 
         <Image x:Name="image_" AllowDrop="True" PreviewDragEnter="Image_PreviewDragEnter" PreviewDragOver="Image_PreviewDragOver" PreviewDrop="Image_PreviewDrop">
@@ -47,8 +52,9 @@
                 Loaded="canvas_Loaded"
                 SizeChanged="canvas_SizeChanged" Visibility="Hidden">
         </Canvas>
-        
-        <ProgressBar x:Name="progress" Margin="0,0,0,0" Grid.Row="1"/>
+
+        <ProgressBar x:Name="progressbar" Margin="-1,0" Grid.Row="1" Foreground="#FF63C5CF" Background="{x:Null}" BorderBrush="{x:Null}"/>
+        <Label x:Name="info_label" Content="{Binding info_Message}" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#7FFFFFFF" RenderTransformOrigin="0.5,0.5" Padding="5,0,5,2"/>
 
     </Grid>
 </Window>
