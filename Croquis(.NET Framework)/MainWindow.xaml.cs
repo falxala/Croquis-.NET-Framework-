@@ -68,7 +68,7 @@ public partial class MainWindow : Window
         string CurrentImage = "";
         int Count = 0;
         System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-        double Interval_time = 30;
+        int Interval_time = 30;
         int Update_interval = 15;
         bool pause_flag = false;
         bool reset_flag = true;
@@ -176,8 +176,8 @@ public partial class MainWindow : Window
                     }
                 }
                 image_.Source = imgsourse;
-                text_pop(true);
                 navigate_vm.Message = "Finish!";
+                FileList.Clear();
             }
             catch (Exception)
             {
@@ -185,15 +185,26 @@ public partial class MainWindow : Window
             }
             finally
             {
-                FileList.Clear();
+                if (MenuRepeat.IsChecked && reset_flag == false)
+                {
+                    text_pop(false);
+                    await Slideshow(fileNames);
+                }
+                else
+                {
+                    text_pop(true);
+                    await Task.Delay(3000);
+                    if (!reset_flag)
+                        Reset();
+                }
             }
         }
 
-        private void SetImage(string image_name)
+        private bool SetImage(string image_name)
         {
-            CurrentImage = image_name;
             try
             {
+                CurrentImage = image_name;
                 BitmapImage bmpImage = new BitmapImage();
                 using (FileStream stream = File.OpenRead(image_name))
                 {
@@ -207,35 +218,56 @@ public partial class MainWindow : Window
                     image_.Source = ToGrayScale(bmpImage);
                 else
                     image_.Source = bmpImage;
+                return true;
+
             }
-            catch (Exception ex)
+            catch
             {
-                Console.WriteLine(ex.Message);
-                //text_pop(true,"非対応ファイルが含まれています");
+                //Console.WriteLine(ex.Message);
+                return false;
+
             }
+
         }
 
         private async Task showImage(string image_name)
         {
-            SetImage(image_name);
-            sw.Reset();
-            sw.Start();
-            string old_info = "--";
-            string current_info;
-            while (sw.ElapsedMilliseconds <= Interval_time * 1000 && reset_flag == false)
+            try
             {
-                pause();
+                if (!SetImage(image_name))
+                    throw new Exception();
 
-                await Task.Delay(Update_interval);//delayの精度が15ms
-                progressbar.Value = sw.ElapsedMilliseconds / (Interval_time * 1000) * 100;
-                current_info = "[ " + Count + " out of " + FileList.Count + " ]  remaining : " + ((Interval_time * 1000 - sw.ElapsedMilliseconds) / 1000).ToString("f0");
-                if(current_info != old_info)
+                var seconds = 0;
+                var span = new TimeSpan(0, 0, seconds);
+
+                sw.Reset();
+                sw.Start();
+                string old_info = "--";
+                string current_info;
+                while (sw.ElapsedMilliseconds <= Interval_time * 1000 && reset_flag == false)
                 {
-                    navigate_vm.info_Message = current_info;
+                    pause();
+
+                    await Task.Delay(Update_interval);//delayの精度が15ms
+                    progressbar.Value = (double)sw.ElapsedMilliseconds / (Interval_time * 1000) * 100;
+                    seconds = (int)((Interval_time * 1000 - sw.ElapsedMilliseconds) / 1000);
+                    span = new TimeSpan(0, 0, seconds);
+;                    current_info = "[ " + Count + " out of " + FileList.Count + " ]  remaining : " + span.ToString(@"mm\:ss");
+                    if (current_info != old_info)
+                    {
+                        navigate_vm.info_Message = current_info;
+                    }
+                    old_info = current_info;
                 }
-                old_info = current_info;
+                sw.Stop();
             }
-            sw.Stop();
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                sw.Stop();
+                sw.Reset();
+            }
+
         }
 
         private void text_pop(bool on_off)
@@ -316,16 +348,23 @@ public partial class MainWindow : Window
                 info_Click(null,null);
             }
 
+
             if (e.Key == Key.Left == true && Count > 1 && FileList.Count != 0)
             {
-                Count--;
-                SetImage(FileList[Count - 1]);
+                do
+                {
+                    Count--;
+                } while (!SetImage(FileList[Count - 1]) && 1 < Count);
+
                 sw.Reset();
             }
             if (e.Key == Key.Right == true && Count < FileList.Count && FileList.Count != 0)
             {
-                Count++;
-                SetImage(FileList[Count - 1]);
+                do
+                {
+                    Count++;
+                } while (!SetImage(FileList[Count - 1]) && FileList.Count > Count);
+
                 sw.Reset();
             }
 
@@ -334,6 +373,7 @@ public partial class MainWindow : Window
 
         private void Reset()
         {
+            sw.Stop();
             sw.Reset();
             text_pop(true);
             navigate_vm.Message = "Drop files here";
@@ -343,6 +383,8 @@ public partial class MainWindow : Window
             progressbar.Visibility = Visibility.Hidden;
             grayscale_flag = false;
             pause_flag = false;
+            FileList.Clear();
+            reset_flag = true;
         }
 
         private void pause()
@@ -355,52 +397,67 @@ public partial class MainWindow : Window
 
         private void item10_Click(object sender, RoutedEventArgs e)
         {
-            Interval_time = 10;
+            Interval_time = 15;
             Update_interval = 15;
-            navigate_vm.info_Message = "set:" + Interval_time;
+            navigate_vm.info_Message = "set:" + new TimeSpan(0, 0, Interval_time).ToString(@"mm\:ss");
         }
 
         private void item30_Click(object sender, RoutedEventArgs e)
         {
             Interval_time = 30;
             Update_interval = 15;
-            navigate_vm.info_Message = "set:" + Interval_time;
+            navigate_vm.info_Message = "set:" + new TimeSpan(0, 0, Interval_time).ToString(@"mm\:ss");
         }
 
         private void item60_Click(object sender, RoutedEventArgs e)
         {
             Interval_time = 60;
             Update_interval = 20;
-            navigate_vm.info_Message = "set:" + Interval_time;
+            navigate_vm.info_Message = "set:" + new TimeSpan(0, 0, Interval_time).ToString(@"mm\:ss");
         }
 
         private void item90_Click(object sender, RoutedEventArgs e)
         {
             Interval_time = 90;
             Update_interval = 20;
-            navigate_vm.info_Message = "set:" + Interval_time;
+            navigate_vm.info_Message = "set:" + new TimeSpan(0, 0, Interval_time).ToString(@"mm\:ss");
         }
 
         private void item180_Click(object sender, RoutedEventArgs e)
         {
             Interval_time = 180;
             Update_interval = 50;
-            navigate_vm.info_Message = "set:" + Interval_time;
+            navigate_vm.info_Message = "set:" + new TimeSpan(0, 0, Interval_time).ToString(@"mm\:ss");
         }
 
         private void item300_Click(object sender, RoutedEventArgs e)
         {
             Interval_time = 300;
             Update_interval = 50;
-            navigate_vm.info_Message = "set:" + Interval_time;
+            navigate_vm.info_Message = "set:" + new TimeSpan(0, 0, Interval_time).ToString(@"mm\:ss");
         }
+
+        private void item600_Click(object sender, RoutedEventArgs e)
+        {
+            Interval_time = 600;
+            Update_interval = 100;
+            navigate_vm.info_Message = "set:" + new TimeSpan(0, 0, Interval_time).ToString(@"mm\:ss");
+        }
+
+        private void item900_Click(object sender, RoutedEventArgs e)
+        {
+            Interval_time = 900;
+            Update_interval = 100;
+            navigate_vm.info_Message = "set:" + new TimeSpan(0, 0, Interval_time).ToString(@"mm\:ss");
+        }
+
 
         private void Pause(object sender, RoutedEventArgs e)
         {
             pause_flag = !pause_flag;
             if (pause_flag == true)
             {
-                mainwindow.Background = Brushes.Gray;
+                mainwindow.Background = Brushes.LightGray;
             }
             else
                 mainwindow.Background = background_Color;
@@ -577,6 +634,17 @@ public partial class MainWindow : Window
                     RowDefinition.Height = new GridLength(7);
                 }
             }
+        }
+
+
+        private void MenuRepeat_Click(object sender, RoutedEventArgs e)
+        {
+            MenuRepeat.IsChecked = !MenuRepeat.IsChecked;
+        }
+
+        private void quit_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
         }
     }
 }
