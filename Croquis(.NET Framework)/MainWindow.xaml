@@ -7,7 +7,7 @@
         xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2" 
         xmlns:local="clr-namespace:Croquis_.NET_Framework_"
         mc:Ignorable="d"
-        Title="Croquis Slideshow" AllowDrop="True" PreviewKeyDown="mainwindow_PreviewKeyDown" Height="400" Width="600" Loaded="mainwindow_Loaded" MinWidth="480" MinHeight="360">
+        Title="Croquis Slideshow" AllowDrop="True" PreviewKeyDown="mainwindow_PreviewKeyDown" Height="400" Width="600" Loaded="mainwindow_Loaded" MinWidth="480" MinHeight="360" IsTabStop="False" PreviewMouseDoubleClick="mainwindow_PreviewMouseDoubleClick">
 
     <Window.Resources>
         <Style TargetType="ComboBoxItem">
@@ -351,8 +351,9 @@
             <TextBlock x:Name="text"  Text="{Binding  Message}" FontFamily="Arial Black" FontSize="48" UseLayoutRounding="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black" Opacity="0.8" TextWrapping="WrapWithOverflow" TextAlignment="Center"/>
 
 
-            <Image x:Name="image_" AllowDrop="True" PreviewDragOver="Image_PreviewDragOver" PreviewDrop="Image_PreviewDrop" OpacityMask="Black"/>
+            <Image x:Name="image_" AllowDrop="True" PreviewDragOver="Image_PreviewDragOver" PreviewDrop="Image_PreviewDrop"/>
 
+            
             <Canvas Name="canvas"
                 SnapsToDevicePixels="True"
                 Loaded="canvas_Loaded"
@@ -364,7 +365,8 @@
             <DockPanel x:Name="Panel" Grid.RowSpan="2" HorizontalAlignment="Right" Width="20" Cursor="Hand" Background="#00000000" Opacity="0.5" PreviewMouseLeftButtonDown="Rectangle_MouseDown"/>
         </Grid>
 
-        <ListView x:Name="Listview" ItemsSource="{Binding}"  ScrollViewer.HorizontalScrollBarVisibility="Disabled" Grid.Column="2" BorderBrush="White" SelectionChanged="Listview_SelectionChanged" Focusable="False" Margin="0,27,0,0">
+        <Grid Grid.Column="2" Background="White">
+            <ListView x:Name="Listview" ItemsSource="{Binding}"  ScrollViewer.HorizontalScrollBarVisibility="Disabled" Grid.Column="2" BorderBrush="White" SelectionChanged="Listview_SelectionChanged" Focusable="False" Margin="0,27,0,0" SelectionMode="Single">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <WrapPanel/>
@@ -381,7 +383,9 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+        <ComboBox Style="{DynamicResource ComboBoxStyle1}" x:Name="comboBox" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="22" BorderBrush="Silver" Foreground="Black" Background="White" SelectionChanged="comboBox_SelectionChanged" Focusable="False" IsTabStop="False"/>
+        </Grid>
         <GridSplitter x:Name="GridSplitter" Grid.Column="1" HorizontalAlignment="Stretch" Focusable="False" PreviewMouseLeftButtonUp="GridSplitter_PreviewMouseLeftButtonUp" PreviewMouseLeftButtonDown="GridSplitter_PreviewMouseLeftButtonDown"/>
-        <ComboBox Style="{DynamicResource ComboBoxStyle1}" x:Name="comboBox" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="22" BorderBrush="Silver" Foreground="Black" Background="White" SelectionChanged="comboBox_SelectionChanged"/>
+
     </Grid>
 </Window>

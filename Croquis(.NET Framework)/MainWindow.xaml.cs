@@ -192,10 +192,12 @@ namespace Croquis_.NET_Framework_
             return thumbnail;
         }
 
+        bool wait_time;
         private async void StartSlideshow(string[] fileNames)
         {
             progressbar.Visibility = Visibility.Visible;
 
+            wait_time = true;
             for (int t = 3; t > 0; t--)
             {
                 text_pop(true);
@@ -203,6 +205,7 @@ namespace Croquis_.NET_Framework_
 
                 await Task.Delay(1000);
             }
+            wait_time = false;
 
             reset_flag = false;
 
@@ -462,6 +465,7 @@ namespace Croquis_.NET_Framework_
             reset_flag = true;
             Listview.SelectedIndex = -1;
             CurrentImage = "";
+            wait_time = false;
         }
 
         private void pause()
@@ -665,7 +669,7 @@ namespace Croquis_.NET_Framework_
 
         private void mainwindow_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (!reset_flag)
+            if (!reset_flag || wait_time)
                 return;
             var dialog = new OpenFileDialog();
 
@@ -733,14 +737,16 @@ namespace Croquis_.NET_Framework_
                 foreach (ListImage selected_item in Listview.SelectedItems)
                 {
                     if (!reset_flag)
+                    {
                         SetImage(selected_item.Name);
+                    }
                 }
             }
             catch { }
         }
 
         Point oldpoint;
-        double old_thumbnailColumnWidth;
+        GridLength old_thumbnailColumnWidth;
         private void GridSplitter_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             if (e.GetPosition(this) == oldpoint)
@@ -758,7 +764,7 @@ namespace Croquis_.NET_Framework_
         {
             if (thumbnailColumn.Width.Value != 0)
             {
-                old_thumbnailColumnWidth = thumbnailColumn.ActualWidth;
+                old_thumbnailColumnWidth = thumbnailColumn.Width;
                 thumbnailColumn.MinWidth = 0;
                 thumbnailColumn.Width = new GridLength(0, GridUnitType.Star);
                 GridSplitterColumn.MinWidth = 0;
@@ -768,7 +774,7 @@ namespace Croquis_.NET_Framework_
             else
             {
                 thumbnailColumn.MinWidth = 160;
-                thumbnailColumn.Width = new GridLength(old_thumbnailColumnWidth, GridUnitType.Star);
+                thumbnailColumn.Width = old_thumbnailColumnWidth;
                 GridSplitterColumn.MinWidth = 7;
                 GridSplitterColumn.Width = new GridLength(1, GridUnitType.Star);
                 Listview.IsEnabled = true;
