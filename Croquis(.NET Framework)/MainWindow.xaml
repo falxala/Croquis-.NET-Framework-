@@ -6,62 +6,91 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Croquis_.NET_Framework_"
         mc:Ignorable="d"
-         Title="Croquis Slideshow" AllowDrop="True" PreviewKeyDown="mainwindow_PreviewKeyDown" PreviewMouseLeftButtonDown="mainwindow_PreviewMouseLeftButtonDown" PreviewMouseDoubleClick="mainwindow_PreviewMouseDoubleClick" Height="400" Width="600">
-    
-    <Window.ContextMenu>
-        <fw:AcrylicContextMenu HasDropShadow="True">
-            <MenuItem Header="Interval">
-                <MenuItem x:Name="item10" Header="15s" Click="item10_Click"/>
-                <MenuItem x:Name="item30" Header="30s" Click="item30_Click"/>
-                <MenuItem x:Name="item60" Header="60s" Click="item60_Click"/>
-                <MenuItem x:Name="item90" Header="90s" Click="item90_Click"/>
-                <MenuItem x:Name="item180" Header="3min" Click="item180_Click"/>
-                <MenuItem x:Name="item300" Header="5min" Click="item300_Click"/>
-                <MenuItem x:Name="item600" Header="10min" Click="item600_Click"/>
-                <MenuItem x:Name="item900" Header="15min" Click="item900_Click"/>
-            </MenuItem>
-            <Separator />
-            <MenuItem x:Name="MenuRepeat" Header="Repeat" Click="MenuRepeat_Click"/>
-            <MenuItem Header="Pause" Click="Pause" InputGestureText="Space"/>
-            <Separator />
-            <MenuItem x:Name="FullScreen" Header="FullScreen" Click="FullScreen_Click" InputGestureText="Enter"/>
-            <MenuItem Header="GrayScale ON/OFF" Click="GrayScale" InputGestureText="C or S"/>
-            <MenuItem Header="Grid ON/OFF" Click="Grid" InputGestureText="G"/>
-            <MenuItem x:Name="MenuInfo" Header="Status ON/OFF" Click="info_Click" InputGestureText="I"/>
-            <MenuItem x:Name="menuProgress" Header="Progress ON/OFF" Click="menuProgress_Click" InputGestureText="P"/>
-            <MenuItem Header="Background" InputGestureText="B">
-                <MenuItem x:Name="MenuWhiteBackground" Header="White" Click="White"/>
-                <MenuItem x:Name="MenuBlackBackground" Header="Black" Click="Black"/>
-            </MenuItem>
-            <Separator></Separator>
-            <MenuItem x:Name="reset" Header="Reset" Click="reset_Click"/>
-            <MenuItem x:Name="quit" Header="Quit" Click="quit_Click"/>
-        </fw:AcrylicContextMenu>
-    </Window.ContextMenu>
+         Title="Croquis Slideshow" AllowDrop="True" PreviewKeyDown="mainwindow_PreviewKeyDown" PreviewMouseDoubleClick="mainwindow_PreviewMouseDoubleClick" Height="400" Width="600" Loaded="mainwindow_Loaded" MinWidth="480" MinHeight="360">
 
-    <Grid Margin="0,0,0,0">
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition x:Name="RowDefinition" Height="7"/>
-        </Grid.RowDefinitions>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="500*" MinWidth="300"/>
+            <ColumnDefinition x:Name="GridSplitterColumn" Width="1*" MinWidth="7"/>
+            <ColumnDefinition x:Name="thumbnailColumn" Width="155*" MinWidth="155"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid x:Name="drawingGrid" Margin="0,0,0,0" Background="#00000000" MouseLeftButtonDown="DragMove_PreviewMouseLeftButtonDown">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition x:Name="RowDefinition" Height="7"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ContextMenu>
+                <fw:AcrylicContextMenu HasDropShadow="True">
+                    <MenuItem Header="Interval">
+                        <MenuItem x:Name="item10" Header="15s" Click="item10_Click"/>
+                        <MenuItem x:Name="item30" Header="30s" Click="item30_Click"/>
+                        <MenuItem x:Name="item60" Header="60s" Click="item60_Click"/>
+                        <MenuItem x:Name="item90" Header="90s" Click="item90_Click"/>
+                        <MenuItem x:Name="item180" Header="3min" Click="item180_Click"/>
+                        <MenuItem x:Name="item300" Header="5min" Click="item300_Click"/>
+                        <MenuItem x:Name="item600" Header="10min" Click="item600_Click"/>
+                        <MenuItem x:Name="item900" Header="15min" Click="item900_Click"/>
+                    </MenuItem>
+                    <Separator />
+                    <!--
+                    <MenuItem x:Name="MenuStart" Header="Start Slideshow"  InputGestureText="" Click="MenuStart_Click"/>
+                    -->
+                    <MenuItem Header="Pause" Click="Pause" InputGestureText="Space"/>
+                    <MenuItem x:Name="MenuRepeat" Header="Repeat" Click="MenuRepeat_Click"/>
+                    <Separator />
+                    <MenuItem x:Name="FullScreen" Header="FullScreen" Click="FullScreen_Click" InputGestureText="Enter"/>
+                    <MenuItem Header="GrayScale ON/OFF" Click="GrayScale" InputGestureText="C or S"/>
+                    <MenuItem Header="Grid ON/OFF" Click="Grid" InputGestureText="G"/>
+                    <MenuItem x:Name="menuListview" Header="ListView ON/OFF" InputGestureText="Tab" Click="menuListview_Click"/>
+                    <MenuItem x:Name="MenuInfo" Header="Status ON/OFF" Click="info_Click" InputGestureText="I"/>
+                    <MenuItem x:Name="menuProgress" Header="Progress ON/OFF" Click="menuProgress_Click" InputGestureText="P"/>
+                    <MenuItem Header="Background" InputGestureText="B">
+                        <MenuItem x:Name="MenuWhiteBackground" Header="White" Click="White"/>
+                        <MenuItem x:Name="MenuBlackBackground" Header="Black" Click="Black"/>
+                    </MenuItem>
+                    <Separator></Separator>
+                    <MenuItem x:Name="reset" Header="Reset" Click="reset_Click"/>
+                    <MenuItem x:Name="quit" Header="Quit" Click="quit_Click"/>
+                </fw:AcrylicContextMenu>
+            </Grid.ContextMenu>
 
 
+            <TextBlock x:Name="text"  Text="{Binding  Message}" FontFamily="Arial Black" FontSize="48" UseLayoutRounding="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black" Opacity="0.8" TextWrapping="WrapWithOverflow" TextAlignment="Center"/>
 
-        <TextBlock x:Name="text"  Text="{Binding  Message}" FontFamily="Arial Black" FontSize="48" UseLayoutRounding="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black" Opacity="0.8" TextWrapping="WrapWithOverflow" TextAlignment="Center"/>
 
+            <Image x:Name="image_" AllowDrop="True" PreviewDragOver="Image_PreviewDragOver" PreviewDrop="Image_PreviewDrop" OpacityMask="Black"/>
 
-        <Image x:Name="image_" AllowDrop="True" PreviewDragEnter="Image_PreviewDragEnter" PreviewDragOver="Image_PreviewDragOver" PreviewDrop="Image_PreviewDrop">
-
-        </Image>
-
-        <Canvas Name="canvas"
+            <Canvas Name="canvas"
                 SnapsToDevicePixels="True"
                 Loaded="canvas_Loaded"
                 SizeChanged="canvas_SizeChanged" Visibility="Hidden">
-        </Canvas>
+            </Canvas>
 
-        <ProgressBar x:Name="progressbar" Margin="-1,0" Grid.Row="1" Foreground="#FF63C5CF" Background="{x:Null}" BorderBrush="{x:Null}"/>
-        <Label x:Name="info_label" Content="{Binding info_Message}" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#7FFFFFFF" RenderTransformOrigin="0.5,0.5" Padding="5,0,5,2" FontSize="14" FontWeight="Bold"/>
+            <ProgressBar x:Name="progressbar" Grid.Row="1" Foreground="#FFFF3030" Background="#4C000000" BorderBrush="{x:Null}" VerticalAlignment="Stretch"/>
+            <Label x:Name="info_label" Content="{Binding info_Message}" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#7FFFFFFF" RenderTransformOrigin="0.5,0.5" Padding="5,0,5,2" FontSize="14" FontWeight="Bold"/>
+            <DockPanel x:Name="Panel" Grid.RowSpan="2" HorizontalAlignment="Right" Width="20" Cursor="Hand" Background="#00000000" Opacity="0.5" PreviewMouseLeftButtonDown="Rectangle_MouseDown"/>
+        </Grid>
 
+        <ListView x:Name="Listview" ItemsSource="{Binding}"  ScrollViewer.HorizontalScrollBarVisibility="Disabled" Grid.Column="2" BorderBrush="White" SelectionChanged="Listview_SelectionChanged" Focusable="False" Margin="0,22,0,0">
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel/>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Width="127" Height="127">
+                        <Image Source="{Binding Image}"></Image>
+                        <!--
+                        <TextBlock Text="{Binding  Path=Title}"></TextBlock>
+                        -->
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <GridSplitter x:Name="GridSplitter" Grid.Column="1" HorizontalAlignment="Stretch" Focusable="False" PreviewMouseLeftButtonUp="GridSplitter_PreviewMouseLeftButtonUp" PreviewMouseLeftButtonDown="GridSplitter_PreviewMouseLeftButtonDown"/>
+        <ComboBox Style="{StaticResource }" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="20" BorderBrush="Silver" Foreground="Black" Background="White"/>
     </Grid>
 </Window>

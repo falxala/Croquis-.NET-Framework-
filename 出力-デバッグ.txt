@@ -1,0 +1,37 @@
+﻿'Croquis.exe' (CLR v4.0.30319: DefaultDomain): 'C:\WINDOWS\Microsoft.Net\assembly\GAC_32\mscorlib\v4.0_4.0.0.0__b77a5c561934e089\mscorlib.dll' が読み込まれました。
+'Croquis.exe' (CLR v4.0.30319: DefaultDomain): 'C:\Users\fortia\source\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\bin\Debug\Croquis.exe' が読み込まれました。シンボルが読み込まれました。
+'Croquis.exe' (CLR v4.0.30319: Croquis.exe): 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\PresentationFramework\v4.0_4.0.0.0__31bf3856ad364e35\PresentationFramework.dll' が読み込まれました。
+'Croquis.exe' (CLR v4.0.30319: Croquis.exe): 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\WindowsBase\v4.0_4.0.0.0__31bf3856ad364e35\WindowsBase.dll' が読み込まれました。
+'Croquis.exe' (CLR v4.0.30319: Croquis.exe): 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Core\v4.0_4.0.0.0__b77a5c561934e089\System.Core.dll' が読み込まれました。
+'Croquis.exe' (CLR v4.0.30319: Croquis.exe): 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System\v4.0_4.0.0.0__b77a5c561934e089\System.dll' が読み込まれました。
+'Croquis.exe' (CLR v4.0.30319: Croquis.exe): 'C:\WINDOWS\Microsoft.Net\assembly\GAC_32\PresentationCore\v4.0_4.0.0.0__31bf3856ad364e35\PresentationCore.dll' が読み込まれました。
+'Croquis.exe' (CLR v4.0.30319: Croquis.exe): 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Xaml\v4.0_4.0.0.0__b77a5c561934e089\System.Xaml.dll' が読み込まれました。
+'Croquis.exe' (CLR v4.0.30319: Croquis.exe): 'D:\Program Files\Microsoft Visual Studio\2019\Community\Common7\IDE\PrivateAssemblies\Runtime\Microsoft.VisualStudio.Debugger.Runtime.Desktop.dll' が読み込まれました。
+'Croquis.exe' (CLR v4.0.30319: Croquis.exe): 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Configuration\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Configuration.dll' が読み込まれました。
+'Croquis.exe' (CLR v4.0.30319: Croquis.exe): 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Xml\v4.0_4.0.0.0__b77a5c561934e089\System.Xml.dll' が読み込まれました。
+'Croquis.exe' (CLR v4.0.30319: Croquis.exe): 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\mscorlib.resources\v4.0_4.0.0.0_ja_b77a5c561934e089\mscorlib.resources.dll' が読み込まれました。モジュールがシンボルなしでビルドされました。
+'Croquis.exe' (CLR v4.0.30319: Croquis.exe): 'C:\Users\fortia\source\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\bin\Debug\FluentWPF.dll' が読み込まれました。
+'Croquis.exe' (CLR v4.0.30319: Croquis.exe): 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\PresentationFramework.Aero2\v4.0_4.0.0.0__31bf3856ad364e35\PresentationFramework.Aero2.dll' が読み込まれました。
+'Croquis.exe' (CLR v4.0.30319: Croquis.exe): 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Windows.Controls.Ribbon\v4.0_4.0.0.0__b77a5c561934e089\System.Windows.Controls.Ribbon.dll' が読み込まれました。
+'Croquis.exe' (CLR v4.0.30319: Croquis.exe): 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\PresentationFramework.resources\v4.0_4.0.0.0_ja_31bf3856ad364e35\PresentationFramework.resources.dll' が読み込まれました。モジュールがシンボルなしでビルドされました。
+'Croquis.exe' (CLR v4.0.30319: Croquis.exe): 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\PresentationCore.resources\v4.0_4.0.0.0_ja_31bf3856ad364e35\PresentationCore.resources.dll' が読み込まれました。モジュールがシンボルなしでビルドされました。
+'Croquis.exe' (CLR v4.0.30319: Croquis.exe): 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\PresentationFramework-SystemXml\v4.0_4.0.0.0__b77a5c561934e089\PresentationFramework-SystemXml.dll' が読み込まれました。
+'Croquis.exe' (CLR v4.0.30319: Croquis.exe): 'd:\program files\microsoft visual studio\2019\community\common7\ide\commonextensions\microsoft\xamldiagnostics\Framework\x86\Microsoft.VisualStudio.DesignTools.WpfTap.dll' が読み込まれました。
+'Croquis.exe' (CLR v4.0.30319: Croquis.exe): 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Runtime.Serialization\v4.0_4.0.0.0__b77a5c561934e089\System.Runtime.Serialization.dll' が読み込まれました。
+'Croquis.exe' (CLR v4.0.30319: Croquis.exe): 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\SMDiagnostics\v4.0_4.0.0.0__b77a5c561934e089\SMDiagnostics.dll' が読み込まれました。
+'Croquis.exe' (CLR v4.0.30319: Croquis.exe): 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.ServiceModel.Internals\v4.0_4.0.0.0__31bf3856ad364e35\System.ServiceModel.Internals.dll' が読み込まれました。
+'Croquis.exe' (CLR v4.0.30319: Croquis.exe): 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Runtime.Serialization.resources\v4.0_4.0.0.0_ja_b77a5c561934e089\System.Runtime.Serialization.resources.dll' が読み込まれました。モジュールがシンボルなしでビルドされました。
+'Croquis.exe' (CLR v4.0.30319: Croquis.exe): 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\UIAutomationProvider\v4.0_4.0.0.0__31bf3856ad364e35\UIAutomationProvider.dll' が読み込まれました。
+'Croquis.exe' (CLR v4.0.30319: Croquis.exe): 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\UIAutomationTypes\v4.0_4.0.0.0__31bf3856ad364e35\UIAutomationTypes.dll' が読み込まれました。
+System.Windows.Data Error: 4 : Cannot find source for binding with reference 'RelativeSource FindAncestor, AncestorType='System.Windows.Shapes.Rectangle', AncestorLevel='1''. BindingExpression:Path=(0); DataItem=null; target element is 'SolidColorBrush' (HashCode=16490914); target property is 'Color' (type 'Color')
+'Croquis.exe' (CLR v4.0.30319: Croquis.exe): 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\Accessibility\v4.0_4.0.0.0__b03f5f7f11d50a3a\Accessibility.dll' が読み込まれました。
+スレッド 0x67b4 はコード 0 (0x0) で終了しました。
+スレッド 0x24a4 はコード 0 (0x0) で終了しました。
+スレッド 0x2474 はコード 0 (0x0) で終了しました。
+スレッド 0x3508 はコード 0 (0x0) で終了しました。
+スレッド 0x6a78 はコード 0 (0x0) で終了しました。
+スレッド 0x6cd4 はコード 0 (0x0) で終了しました。
+スレッド 0x17dc はコード 0 (0x0) で終了しました。
+スレッド 0x53c0 はコード 0 (0x0) で終了しました。
+スレッド 0x5f30 はコード 0 (0x0) で終了しました。
+プログラム '[20648] Croquis.exe' はコード 0 (0x0) で終了しました。
