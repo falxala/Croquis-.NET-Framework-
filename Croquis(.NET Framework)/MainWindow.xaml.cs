@@ -66,6 +66,7 @@ namespace Croquis_.NET_Framework_
     {
         public string Name { get; set; }
         public BitmapSource Image { get; set; }
+        public Guid Guid { get; set; }
     }
 
     /// <summary>
@@ -108,16 +109,21 @@ namespace Croquis_.NET_Framework_
             info_label.DataContext = navigate_vm;
             navigate_vm.info_Message = "--";
 
+        }
+
+        private void mainwindow_Loaded(object sender, RoutedEventArgs e)
+        {
             //並び替え
             cv = CollectionViewSource.GetDefaultView(listImages);
             cv.SortDescriptions.Clear();
             cv.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
 
-        }
-
-        private void mainwindow_Loaded(object sender, RoutedEventArgs e)
-        {
             HIdeThumbnail();
+
+            comboBox.Items.Add("Ascending");
+            comboBox.Items.Add("Descending");
+            comboBox.Items.Add("Random");
+            comboBox.SelectedIndex = 0;
         }
 
 
@@ -155,7 +161,7 @@ namespace Croquis_.NET_Framework_
                 Parallel.For(0, fileNames.Length, options, i =>
                 {
                     Task.Delay(100);
-                    ListImage image = new ListImage { Name = fileNames[i], Image = CreateThumbnail(fileNames[i]) };
+                    ListImage image = new ListImage { Name = fileNames[i], Image = CreateThumbnail(fileNames[i]),Guid = Guid.NewGuid() };
                     if (image.Image != null)
                         lock (lockobj) listImages.Add(image);
                 });
@@ -452,7 +458,7 @@ namespace Croquis_.NET_Framework_
             progressbar.Visibility = Visibility.Hidden;
             grayscale_flag = false;
             pause_flag = false;
-            listImages.Clear();           
+            listImages.Clear();
             reset_flag = true;
             Listview.SelectedIndex = -1;
             CurrentImage = "";
@@ -737,7 +743,7 @@ namespace Croquis_.NET_Framework_
         double old_thumbnailColumnWidth;
         private void GridSplitter_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if(e.GetPosition(this) == oldpoint)
+            if (e.GetPosition(this) == oldpoint)
             {
                 HIdeThumbnail();
             }
@@ -788,6 +794,25 @@ namespace Croquis_.NET_Framework_
                 list.Add(name.Name);
             }
             StartSlideshow(list.ToArray());
+        }
+
+        private void comboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            switch (comboBox.SelectedIndex)
+            {
+                case 0:
+                    cv.SortDescriptions.Clear();
+                    cv.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
+                    break;
+                case 1:
+                    cv.SortDescriptions.Clear();
+                    cv.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Descending));
+                    break;
+                case 2:
+                    cv.SortDescriptions.Clear();
+                    cv.SortDescriptions.Add(new SortDescription("Guid", ListSortDirection.Ascending));
+                    break;
+            }
         }
     }
 }

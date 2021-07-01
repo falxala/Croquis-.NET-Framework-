@@ -4,6 +4,6 @@
              xmlns:local="clr-namespace:Croquis_.NET_Framework_"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-        
+         
     </Application.Resources>
 </Application>
