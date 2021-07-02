@@ -1,15 +1,20 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Collections.ObjectModel;
-using System.IO;
-using Path = System.Windows.Shapes.Path;
-using Microsoft.Win32;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using shapesPath = System.Windows.Shapes.Path;
+using ImageMagick;
+using System.Windows.Interop;
 
 namespace Croquis_.NET_Framework_
 {
@@ -60,23 +65,53 @@ namespace Croquis_.NET_Framework_
         }
     }
 
-/// <summary>
-/// MainWindow.xaml の相互作用ロジック
-/// </summary>
-public partial class MainWindow : Window
+    public class ListImage
+    {
+        public string Name { get; set; }
+
+        public int Num { get; set; }
+
+        public BitmapSource Image { get; set; }
+        public Guid Guid { get; set; }
+    }
+
+    public class LogicalStringComparer :
+    System.Collections.IComparer,
+    System.Collections.Generic.IComparer<string>
+    {
+        [System.Runtime.InteropServices.DllImport("shlwapi.dll",
+            CharSet = System.Runtime.InteropServices.CharSet.Unicode,
+            ExactSpelling = true)]
+        private static extern int StrCmpLogicalW(string x, string y);
+
+        public int Compare(string x, string y)
+        {
+            return StrCmpLogicalW(x, y);
+        }
+
+        public int Compare(object x, object y)
+        {
+            return this.Compare(x.ToString(), y.ToString());
+        }
+    }
+
+    /// <summary>
+    /// MainWindow.xaml の相互作用ロジック
+    /// </summary>
+    public partial class MainWindow : Window
     {
         string CurrentImage = "";
-        int Count = 0;
         System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-        int Interval_time = 30;
+        int Interval_time = 15;
         int Update_interval = 15;
         bool pause_flag = false;
         bool reset_flag = true;
         bool grayscale_flag = false;
         Brush background_Color = Brushes.White;
+        ushort gridStrokeThickness = 0;
+        ICollectionView cv;
         ViewModel navigate_vm = new ViewModel();
-
-        private ObservableCollection<string> FileList;
+        ObservableCollection<ListImage> listImages = new ObservableCollection<ListImage>();
         ImageSource imgsourse = new RenderTargetBitmap(525,       // Imageの幅
                                        350,      // Imageの高さ
                                        96.0d,                 // 横解像度
@@ -85,12 +120,15 @@ public partial class MainWindow : Window
         public MainWindow()
         {
             InitializeComponent();
-            FileList = new ObservableCollection<string>();
             image_.Source = imgsourse;
             BuildView();
             progressbar.Visibility = Visibility.Hidden;
 
+            //バインディング
+            listview1.DataContext = listImages;
             text.DataContext = navigate_vm;
+            BindingOperations.EnableCollectionSynchronization(listImages, new object());
+
             navigate_vm.Message = "Drop files here";
             text_pop(true);
 
@@ -99,11 +137,23 @@ public partial class MainWindow : Window
 
         }
 
-
-        private void Image_PreviewDragEnter(object sender, DragEventArgs e)
+        private void mainwindow_Loaded(object sender, RoutedEventArgs e)
         {
+            //並び替え
+            cv = CollectionViewSource.GetDefaultView(listImages);
+            cv.SortDescriptions.Clear();
+            cv.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
 
+            HIdeThumbnail();
+
+            comboBox.Items.Add("First In First Out");
+            comboBox.Items.Add("Last In First Out");
+            comboBox.Items.Add("Ascending");
+            comboBox.Items.Add("Descending");
+            comboBox.Items.Add("Random");
+            comboBox.SelectedIndex = 0;
         }
+
 
         private void Image_PreviewDragOver(object sender, DragEventArgs e)
         {
@@ -118,21 +168,84 @@ public partial class MainWindow : Window
             e.Handled = true;
         }
 
-        private  void Image_PreviewDrop(object sender, DragEventArgs e)
+        private void Image_PreviewDrop(object sender, DragEventArgs e)
         {
             //ファイル名を取得
             var fileNames = (string[])e.Data.GetData(DataFormats.FileDrop);
-            if (e.Data.GetDataPresent(DataFormats.FileDrop) && sw.IsRunning == false)
+
+
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
+                if (System.IO.Directory.Exists(fileNames[0]))
+                {
+                    //フォルダ内のファイル名を取得
+                    fileNames = System.IO.Directory.GetFiles(@fileNames[0], "*", System.IO.SearchOption.TopDirectoryOnly);
+                    Array.Sort(fileNames, new LogicalStringComparer());
+                }
+
+                Set_List(fileNames);
                 StartSlideshow(fileNames);
             }
         }
 
+        private async void Set_List(string[] fileNames)
+        {
+            ParallelOptions options = new ParallelOptions();
+            options.MaxDegreeOfParallelism = 8;
+            object lockobj = new object();
+            
+            int offset = 0;
+            if (listImages.Count != 0)
+                offset = listImages.Count;
+
+            foreach (var item in fileNames)
+            {
+                listImages.Add(new ListImage());
+            }
+
+            await Task.Run(() =>
+            {
+                Parallel.For(0, fileNames.Length, options, i =>
+                {
+                    int j = i + offset;
+                    Task.Delay(100);
+                    ListImage image = new ListImage { Name = fileNames[i], Image = CreateThumbnail(fileNames[i]), Guid = Guid.NewGuid(), Num = j };
+                    if (image.Image != null)
+                        lock (lockobj) listImages[j] = image;
+                });
+            });
+
+        }
+
+        private BitmapSource CreateThumbnail(string uri)
+        {
+            BitmapImage thumbnail = new BitmapImage();
+            try
+            {
+                using (FileStream stream = File.OpenRead(uri))
+                {
+                    thumbnail.BeginInit();
+                    thumbnail.CacheOption = BitmapCacheOption.OnLoad;
+                    thumbnail.StreamSource = stream;
+                    thumbnail.DecodePixelWidth = 100;
+                    thumbnail.EndInit();
+                    thumbnail.Freeze();
+                    stream.Close();
+                }
+            }
+            catch
+            {
+                return null;
+            }
+            return thumbnail;
+        }
+
+        bool IsRun = false;
         private async void StartSlideshow(string[] fileNames)
         {
             progressbar.Visibility = Visibility.Visible;
-            reset_flag = false;
 
+            if(IsRun == false)
             for (int t = 3; t > 0; t--)
             {
                 text_pop(true);
@@ -140,44 +253,40 @@ public partial class MainWindow : Window
 
                 await Task.Delay(1000);
             }
+            reset_flag = false;
 
             //最初の1つ目のドロップフォルダなら
-            if (System.IO.Directory.Exists(fileNames[0]))
-            {
-                //フォルダ内のファイル名を取得
-                fileNames = System.IO.Directory.GetFiles(@fileNames[0], "*", System.IO.SearchOption.TopDirectoryOnly);
-            }
-
-            await Slideshow(fileNames);
+            
+            if (IsRun == false)
+                await Slideshow(fileNames);
         }
-
 
         private async Task Slideshow(string[] fileNames)
         {
+            text_pop(false);
 
-            foreach (var name in fileNames)
-            {
-                text_pop(false);
-                FileList.Add(name);
-            }
+            IsRun = true;
 
             try
             {
-                Count = 0;
-                while (Count < FileList.Count)
+                do
                 {
-                    string image_name = FileList[Count];
-                    CurrentImage = image_name;
-                    Count++;
-                    await showImage(image_name);
+                    listview1.SelectedIndex++;
+                    foreach (ListImage selected_item in listview1.SelectedItems)
+                    {
+                        CurrentImage = selected_item.Name;
+                    }
+                    await showImage(CurrentImage);
                     if (reset_flag == true)
                     {
                         throw new Exception();
                     }
-                }
+                    if (listview1.SelectedIndex + 1 >= listImages.Count)
+                        break;
+                } while (listview1.SelectedIndex < listImages.Count);
                 image_.Source = imgsourse;
                 navigate_vm.Message = "Finish!";
-                FileList.Clear();
+
             }
             catch (Exception)
             {
@@ -188,14 +297,17 @@ public partial class MainWindow : Window
                 if (MenuRepeat.IsChecked && reset_flag == false)
                 {
                     text_pop(false);
+                    listview1.SelectedIndex = -1;
                     await Slideshow(fileNames);
                 }
                 else
                 {
-                    text_pop(true);
-                    await Task.Delay(3000);
                     if (!reset_flag)
+                    {
+                        text_pop(true);
+                        await Task.Delay(3000);
                         Reset();
+                    }
                 }
             }
         }
@@ -205,25 +317,28 @@ public partial class MainWindow : Window
             try
             {
                 CurrentImage = image_name;
-                BitmapImage bmpImage = new BitmapImage();
-                using (FileStream stream = File.OpenRead(image_name))
-                {
-                    bmpImage.BeginInit();
-                    bmpImage.CacheOption = BitmapCacheOption.OnLoad;
-                    bmpImage.StreamSource = stream;
-                    bmpImage.EndInit();
-                    stream.Close();
-                }
                 if (grayscale_flag)
-                    image_.Source = ToGrayScale(bmpImage);
+                    image_.Source = ToGrayScale(CurrentImage);
                 else
+                {
+                    BitmapImage bmpImage = new BitmapImage();
+                    using (FileStream stream = File.OpenRead(image_name))
+                    {
+                        bmpImage.BeginInit();
+                        bmpImage.CacheOption = BitmapCacheOption.OnLoad;
+                        bmpImage.StreamSource = stream;
+                        bmpImage.EndInit();
+                        stream.Close();
+                    }
                     image_.Source = bmpImage;
+                }
                 return true;
 
             }
             catch
             {
                 //Console.WriteLine(ex.Message);
+                listview1.SelectedIndex = 0;
                 return false;
 
             }
@@ -252,7 +367,7 @@ public partial class MainWindow : Window
                     progressbar.Value = (double)sw.ElapsedMilliseconds / (Interval_time * 1000) * 100;
                     seconds = (int)((Interval_time * 1000 - sw.ElapsedMilliseconds) / 1000);
                     span = new TimeSpan(0, 0, seconds);
-;                    current_info = "[ " + Count + " out of " + FileList.Count + " ]  remaining : " + span.ToString(@"mm\:ss");
+                    ; current_info = "[ " + (listview1.SelectedIndex + 1) + " out of " + listImages.Count + " ]  remaining : " + span.ToString(@"mm\:ss");
                     if (current_info != old_info)
                     {
                         navigate_vm.info_Message = current_info;
@@ -284,95 +399,106 @@ public partial class MainWindow : Window
 
         private void mainwindow_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter == true)
+            switch (e.Key)
             {
-                FullScreen_Click(null,null);
-            }
-
-            if (e.Key == Key.Escape == true)
-            {
-                if (WindowState == WindowState.Maximized)
+                case Key.Enter:
                     FullScreen_Click(null, null);
+                    break;
+
+                case Key.Escape:
+                    if (WindowState == WindowState.Maximized)
+                    {
+                        FullScreen_Click(null, null);
+                    }
+                    break;
+
+                case Key.Space:
+                    Pause(null, null);
+                    break;
+
+                case Key.G:
+                    Grid(null, null);
+                    break;
+
+                case Key.OemPeriod:
+                    if (gridStrokeThickness <= 10)
+                    {
+                        gridStrokeThickness++;
+                        BuildView();
+                    }
+                    break;
+
+                case Key.OemComma:
+                    if (gridStrokeThickness > 0)
+                    {
+                        gridStrokeThickness--;
+                        BuildView();
+                    }
+                    break;
+
+                case Key.OemOpenBrackets:
+                    if (grid_size < 480)
+                        grid_size += 4;
+                    BuildView();
+                    break;
+
+                case Key.OemCloseBrackets:
+                    if (grid_size > 10)
+                        grid_size -= 4;
+                    BuildView();
+                    break;
+
+                case Key.B:
+                    if (background_Color == Brushes.White)
+                        Black(null, null);
+                    else
+                        White(null, null);
+                    break;
+
+                case Key.S:
+                    GrayScale(null, null);
+                    break;
+
+                case Key.C:
+                    GrayScale(null, null);
+                    break;
+
+                case Key.P:
+                    menuProgress_Click(null, null);
+                    break;
+
+                case Key.R:
+                    sw.Reset();
+                    break;
+
+                case Key.I:
+                    info_Click(null, null);
+                    break;
+
+                case Key.Tab:
+                    HIdeThumbnail();
+                    break;
+
+                case Key.Left:
+                    if (!listview1.IsEnabled && listview1.SelectedIndex > 0 && !reset_flag)
+                    {
+                        listview1.SelectedIndex--;
+                    }
+                    break;
+
+                case Key.Right:
+                    if (!listview1.IsEnabled && listview1.Items.Count >= listview1.SelectedIndex && !reset_flag)
+                    {
+                        listview1.SelectedIndex++;
+                    }
+                    break;
+
             }
-
-            if (e.Key == Key.Space == true)
-            {
-                Pause(null,null);
-            }
-
-            if (e.Key == Key.G == true)
-            {
-                Grid(null,null);
-            }
-
-            if (e.Key == Key.Oem4)
-            {
-                if (grid_size < 480)
-                grid_size += 4;
-                BuildView();
-            }
-
-            if (e.Key == Key.Oem6)
-            {
-                if (grid_size > 10)
-                    grid_size -= 4;
-                BuildView();
-            }
-
-            if (e.Key == Key.B == true)
-            {
-                if (background_Color == Brushes.White)
-                    Black(null, null);
-                else
-                    White(null, null);
-            }
-
-            if (e.Key == Key.S == true || e.Key == Key.C == true)
-            {
-                GrayScale(null,null);
-            }
-
-            if (e.Key == Key.P == true)
-            {
-                menuProgress_Click(null, null);
-            }
-
-            if (e.Key == Key.R == true)
-            {
-                if (sw.IsRunning)
-                    sw.Restart();
-            }
-
-            if (e.Key == Key.I == true)
-            {
-                info_Click(null,null);
-            }
-
-
-            if (e.Key == Key.Left == true && Count > 1 && FileList.Count != 0)
-            {
-                do
-                {
-                    Count--;
-                } while (!SetImage(FileList[Count - 1]) && 1 < Count);
-
-                sw.Reset();
-            }
-            if (e.Key == Key.Right == true && Count < FileList.Count && FileList.Count != 0)
-            {
-                do
-                {
-                    Count++;
-                } while (!SetImage(FileList[Count - 1]) && FileList.Count > Count);
-
-                sw.Reset();
-            }
-
-
         }
 
         private void Reset()
         {
+            IsRun = false;
             sw.Stop();
             sw.Reset();
             text_pop(true);
@@ -381,18 +507,24 @@ public partial class MainWindow : Window
             navigate_vm.info_Message = "--";
             progressbar.Value = 0;
             progressbar.Visibility = Visibility.Hidden;
-            grayscale_flag = false;
             pause_flag = false;
-            FileList.Clear();
+            listImages.Clear();
             reset_flag = true;
+            listview1.SelectedIndex = -1;
+            CurrentImage = "";
+            IsRun = false;
         }
 
         private void pause()
         {
             if (pause_flag == true)
+            {
                 sw.Stop();
+            }
             else if (sw.IsRunning == false && pause_flag == false)
+            {
                 sw.Start();
+            }
         }
 
         private void item10_Click(object sender, RoutedEventArgs e)
@@ -455,12 +587,6 @@ public partial class MainWindow : Window
         private void Pause(object sender, RoutedEventArgs e)
         {
             pause_flag = !pause_flag;
-            if (pause_flag == true)
-            {
-                mainwindow.Background = Brushes.LightGray;
-            }
-            else
-                mainwindow.Background = background_Color;
         }
 
         private void reset_Click(object sender, RoutedEventArgs e)
@@ -485,7 +611,7 @@ public partial class MainWindow : Window
 
 
         //https://zawapro.com/?p=988
-        private  int grid_size = 96;
+        private int grid_size = 96;
         private ScaleTransform scaleTransform = new ScaleTransform();
         private void BuildView()
         {
@@ -494,11 +620,11 @@ public partial class MainWindow : Window
             // 縦線
             for (int i = 0; i < canvas.ActualWidth; i += grid_size)
             {
-                Path path = new Path()
+                shapesPath path = new shapesPath()
                 {
                     Data = new LineGeometry(new Point(i, 0), new Point(i, canvas.ActualHeight)),
-                    Stroke = new SolidColorBrush(Color.FromArgb(128,128,128,128)),
-                    StrokeThickness = 1
+                    Stroke = new SolidColorBrush(Color.FromArgb(128, 128, 128, 128)),
+                    StrokeThickness = gridStrokeThickness + 1
                 };
 
                 path.Data.Transform = scaleTransform;
@@ -509,11 +635,11 @@ public partial class MainWindow : Window
             // 横線
             for (int i = 0; i < canvas.ActualHeight; i += grid_size)
             {
-                Path path = new Path()
+                shapesPath path = new shapesPath()
                 {
                     Data = new LineGeometry(new Point(0, i), new Point(canvas.ActualWidth, i)),
                     Stroke = new SolidColorBrush(Color.FromArgb(128, 128, 128, 128)),
-                    StrokeThickness = 1
+                    StrokeThickness = gridStrokeThickness + 1
                 };
 
                 path.Data.Transform = scaleTransform;
@@ -548,17 +674,23 @@ public partial class MainWindow : Window
                 info_label.Visibility = Visibility.Visible;
         }
 
-        private BitmapSource ToGrayScale( BitmapSource bitmap)
+        private BitmapSource ToGrayScale(string src)
         {
-            FormatConvertedBitmap newFormatedBitmapSource = new FormatConvertedBitmap();
-            newFormatedBitmapSource.BeginInit();
-            newFormatedBitmapSource.Source = bitmap;
-
-            newFormatedBitmapSource.DestinationFormat = PixelFormats.Gray32Float;
-            newFormatedBitmapSource.EndInit();
-
-            return newFormatedBitmapSource;
+            using (var myMagick = new MagickImage(src))
+            {
+                myMagick.RenderingIntent = ImageMagick.RenderingIntent.Perceptual;
+                myMagick.BlackPointCompensation = true;
+                myMagick.ColorSpace = ColorSpace.Gray;
+                return ConvertBitmap(myMagick.ToBitmap());
+            }
         }
+
+        public static BitmapSource ConvertBitmap(System.Drawing.Bitmap source)
+        {
+            return Imaging.CreateBitmapSourceFromHBitmap(source.GetHbitmap(), IntPtr.Zero,
+                 Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+        }
+
 
         private void GrayScale(object sender, RoutedEventArgs e)
         {
@@ -568,19 +700,21 @@ public partial class MainWindow : Window
                     throw new Exception();
 
                 grayscale_flag = !grayscale_flag;
+
                 if (grayscale_flag == true)
-                    image_.Source = ToGrayScale(new BitmapImage(new Uri(CurrentImage)));
+                    image_.Source = ToGrayScale(CurrentImage);
                 else
                     image_.Source = new BitmapImage(new Uri(CurrentImage));
             }
             catch { }
         }
 
-        private void mainwindow_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void DragMove_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             try
             {
-                if (e.GetPosition(this).Y > SystemParameters.CaptionHeight)
+                var a = VisualTreeHelper.HitTest(this, e.GetPosition(this)).VisualHit;
+                if (VisualTreeHelper.HitTest(this,e.GetPosition(this)).VisualHit != Panel)
                     DragMove();
             }
             catch { }
@@ -588,8 +722,8 @@ public partial class MainWindow : Window
 
         private void mainwindow_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (!reset_flag)
-                return;
+            //if (!reset_flag || wait_time) return;
+
             var dialog = new OpenFileDialog();
 
             dialog.Multiselect = true;
@@ -600,6 +734,7 @@ public partial class MainWindow : Window
             // ダイアログを表示する
             if (dialog.ShowDialog() == true)
             {
+                Set_List(dialog.FileNames);
                 StartSlideshow(dialog.FileNames);
             }
         }
@@ -646,5 +781,111 @@ public partial class MainWindow : Window
         {
             Application.Current.Shutdown();
         }
+
+        private void Listview_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            try
+            {
+                sw.Reset();
+                foreach (ListImage selected_item in listview1.SelectedItems)
+                {
+                    if (!reset_flag)
+                    {
+                        SetImage(selected_item.Name);
+                    }
+                }
+                if (listview1.SelectedIndex >= 0)
+                {
+                    ListViewItem item = (ListViewItem)listview1.ItemContainerGenerator.ContainerFromItem(listview1.SelectedItem);
+                    item.Focus();
+                }
+            }
+            catch { }
+        }
+
+        Point oldpoint;
+        GridLength old_thumbnailColumnWidth;
+        private void GridSplitter_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (e.GetPosition(this) == oldpoint)
+            {
+                HIdeThumbnail();
+            }
+        }
+
+        private void GridSplitter_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            oldpoint = e.GetPosition(this);
+        }
+
+        private void HIdeThumbnail()
+        {
+            if (thumbnailColumn.Width.Value != 0)
+            {
+                old_thumbnailColumnWidth = thumbnailColumn.Width;
+                thumbnailColumn.MinWidth = 0;
+                thumbnailColumn.Width = new GridLength(0, GridUnitType.Star);
+                GridSplitterColumn.MinWidth = 0;
+                GridSplitterColumn.Width = new GridLength(0, GridUnitType.Auto);
+                listview1.IsEnabled = false;
+            }
+            else
+            {
+                thumbnailColumn.MinWidth = 160;
+                thumbnailColumn.Width = old_thumbnailColumnWidth;
+                GridSplitterColumn.MinWidth = 10;
+                GridSplitterColumn.Width = new GridLength(7, GridUnitType.Auto);
+                listview1.IsEnabled = true;
+
+            }
+        }
+
+        private void Panel_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            HIdeThumbnail();
+        }
+
+        private void menuListview_Click(object sender, RoutedEventArgs e)
+        {
+            HIdeThumbnail();
+        }
+
+        private void MenuStart_Click(object sender, RoutedEventArgs e)
+        {
+            List<string> list = new List<string>();
+            foreach (ListImage name in listImages)
+            {
+                list.Add(name.Name);
+            }
+            StartSlideshow(list.ToArray());
+        }
+
+        private void comboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            switch (comboBox.SelectedIndex)
+            {
+                case 0:
+                    cv.SortDescriptions.Clear();
+                    cv.SortDescriptions.Add(new SortDescription("Num", ListSortDirection.Ascending));
+                    break;
+                case 1:
+                    cv.SortDescriptions.Clear();
+                    cv.SortDescriptions.Add(new SortDescription("Num", ListSortDirection.Descending));
+                    break;
+                case 2:
+                    cv.SortDescriptions.Clear();
+                    cv.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
+                    break;
+                case 3:
+                    cv.SortDescriptions.Clear();
+                    cv.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Descending));
+                    break;
+                case 4:
+                    cv.SortDescriptions.Clear();
+                    cv.SortDescriptions.Add(new SortDescription("Guid", ListSortDirection.Ascending));
+                    break;
+            }
+        }
+
     }
 }
