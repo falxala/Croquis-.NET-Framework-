@@ -1,20 +1,20 @@
 ﻿using Microsoft.Win32;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Security;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using shapesPath = System.Windows.Shapes.Path;
+using ImageMagick;
+using System.Windows.Interop;
 
 namespace Croquis_.NET_Framework_
 {
@@ -102,7 +102,7 @@ namespace Croquis_.NET_Framework_
     {
         string CurrentImage = "";
         System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-        int Interval_time = 30;
+        int Interval_time = 15;
         int Update_interval = 15;
         bool pause_flag = false;
         bool reset_flag = true;
@@ -125,7 +125,7 @@ namespace Croquis_.NET_Framework_
             progressbar.Visibility = Visibility.Hidden;
 
             //バインディング
-            Listview.DataContext = listImages;
+            listview1.DataContext = listImages;
             text.DataContext = navigate_vm;
             BindingOperations.EnableCollectionSynchronization(listImages, new object());
 
@@ -271,8 +271,8 @@ namespace Croquis_.NET_Framework_
             {
                 do
                 {
-                    Listview.SelectedIndex++;
-                    foreach (ListImage selected_item in Listview.SelectedItems)
+                    listview1.SelectedIndex++;
+                    foreach (ListImage selected_item in listview1.SelectedItems)
                     {
                         CurrentImage = selected_item.Name;
                     }
@@ -281,9 +281,9 @@ namespace Croquis_.NET_Framework_
                     {
                         throw new Exception();
                     }
-                    if (Listview.SelectedIndex + 1 >= listImages.Count)
+                    if (listview1.SelectedIndex + 1 >= listImages.Count)
                         break;
-                } while (Listview.SelectedIndex < listImages.Count);
+                } while (listview1.SelectedIndex < listImages.Count);
                 image_.Source = imgsourse;
                 navigate_vm.Message = "Finish!";
 
@@ -297,7 +297,7 @@ namespace Croquis_.NET_Framework_
                 if (MenuRepeat.IsChecked && reset_flag == false)
                 {
                     text_pop(false);
-                    Listview.SelectedIndex = -1;
+                    listview1.SelectedIndex = -1;
                     await Slideshow(fileNames);
                 }
                 else
@@ -317,26 +317,28 @@ namespace Croquis_.NET_Framework_
             try
             {
                 CurrentImage = image_name;
-                BitmapImage bmpImage = new BitmapImage();
-                using (FileStream stream = File.OpenRead(image_name))
-                {
-                    bmpImage.BeginInit();
-                    bmpImage.CacheOption = BitmapCacheOption.OnLoad;
-                    bmpImage.StreamSource = stream;
-                    bmpImage.EndInit();
-                    stream.Close();
-                }
                 if (grayscale_flag)
-                    image_.Source = ToGrayScale(bmpImage);
+                    image_.Source = ToGrayScale(CurrentImage);
                 else
+                {
+                    BitmapImage bmpImage = new BitmapImage();
+                    using (FileStream stream = File.OpenRead(image_name))
+                    {
+                        bmpImage.BeginInit();
+                        bmpImage.CacheOption = BitmapCacheOption.OnLoad;
+                        bmpImage.StreamSource = stream;
+                        bmpImage.EndInit();
+                        stream.Close();
+                    }
                     image_.Source = bmpImage;
+                }
                 return true;
 
             }
             catch
             {
                 //Console.WriteLine(ex.Message);
-                Listview.SelectedIndex = 0;
+                listview1.SelectedIndex = 0;
                 return false;
 
             }
@@ -365,7 +367,7 @@ namespace Croquis_.NET_Framework_
                     progressbar.Value = (double)sw.ElapsedMilliseconds / (Interval_time * 1000) * 100;
                     seconds = (int)((Interval_time * 1000 - sw.ElapsedMilliseconds) / 1000);
                     span = new TimeSpan(0, 0, seconds);
-                    ; current_info = "[ " + (Listview.SelectedIndex + 1) + " out of " + listImages.Count + " ]  remaining : " + span.ToString(@"mm\:ss");
+                    ; current_info = "[ " + (listview1.SelectedIndex + 1) + " out of " + listImages.Count + " ]  remaining : " + span.ToString(@"mm\:ss");
                     if (current_info != old_info)
                     {
                         navigate_vm.info_Message = current_info;
@@ -478,16 +480,16 @@ namespace Croquis_.NET_Framework_
                     break;
 
                 case Key.Left:
-                    if (!Listview.IsEnabled && Listview.SelectedIndex > 0 && !reset_flag)
+                    if (!listview1.IsEnabled && listview1.SelectedIndex > 0 && !reset_flag)
                     {
-                        Listview.SelectedIndex--;
+                        listview1.SelectedIndex--;
                     }
                     break;
 
                 case Key.Right:
-                    if (!Listview.IsEnabled && Listview.Items.Count >= Listview.SelectedIndex && !reset_flag)
+                    if (!listview1.IsEnabled && listview1.Items.Count >= listview1.SelectedIndex && !reset_flag)
                     {
-                        Listview.SelectedIndex++;
+                        listview1.SelectedIndex++;
                     }
                     break;
 
@@ -505,11 +507,10 @@ namespace Croquis_.NET_Framework_
             navigate_vm.info_Message = "--";
             progressbar.Value = 0;
             progressbar.Visibility = Visibility.Hidden;
-            grayscale_flag = false;
             pause_flag = false;
             listImages.Clear();
             reset_flag = true;
-            Listview.SelectedIndex = -1;
+            listview1.SelectedIndex = -1;
             CurrentImage = "";
             IsRun = false;
         }
@@ -517,9 +518,13 @@ namespace Croquis_.NET_Framework_
         private void pause()
         {
             if (pause_flag == true)
+            {
                 sw.Stop();
+            }
             else if (sw.IsRunning == false && pause_flag == false)
+            {
                 sw.Start();
+            }
         }
 
         private void item10_Click(object sender, RoutedEventArgs e)
@@ -582,12 +587,6 @@ namespace Croquis_.NET_Framework_
         private void Pause(object sender, RoutedEventArgs e)
         {
             pause_flag = !pause_flag;
-            if (pause_flag == true)
-            {
-                mainwindow.Background = Brushes.LightGray;
-            }
-            else
-                mainwindow.Background = background_Color;
         }
 
         private void reset_Click(object sender, RoutedEventArgs e)
@@ -675,17 +674,23 @@ namespace Croquis_.NET_Framework_
                 info_label.Visibility = Visibility.Visible;
         }
 
-        private BitmapSource ToGrayScale(BitmapSource bitmap)
+        private BitmapSource ToGrayScale(string src)
         {
-            FormatConvertedBitmap newFormatedBitmapSource = new FormatConvertedBitmap();
-            newFormatedBitmapSource.BeginInit();
-            newFormatedBitmapSource.Source = bitmap;
-            newFormatedBitmapSource.AlphaThreshold = 0.001;
-            newFormatedBitmapSource.DestinationFormat = PixelFormats.Gray32Float;
-            newFormatedBitmapSource.EndInit();
-
-            return newFormatedBitmapSource;
+            using (var myMagick = new MagickImage(src))
+            {
+                myMagick.RenderingIntent = ImageMagick.RenderingIntent.Perceptual;
+                myMagick.BlackPointCompensation = true;
+                myMagick.ColorSpace = ColorSpace.Gray;
+                return ConvertBitmap(myMagick.ToBitmap());
+            }
         }
+
+        public static BitmapSource ConvertBitmap(System.Drawing.Bitmap source)
+        {
+            return Imaging.CreateBitmapSourceFromHBitmap(source.GetHbitmap(), IntPtr.Zero,
+                 Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+        }
+
 
         private void GrayScale(object sender, RoutedEventArgs e)
         {
@@ -695,8 +700,9 @@ namespace Croquis_.NET_Framework_
                     throw new Exception();
 
                 grayscale_flag = !grayscale_flag;
+
                 if (grayscale_flag == true)
-                    image_.Source = ToGrayScale(new BitmapImage(new Uri(CurrentImage)));
+                    image_.Source = ToGrayScale(CurrentImage);
                 else
                     image_.Source = new BitmapImage(new Uri(CurrentImage));
             }
@@ -781,12 +787,17 @@ namespace Croquis_.NET_Framework_
             try
             {
                 sw.Reset();
-                foreach (ListImage selected_item in Listview.SelectedItems)
+                foreach (ListImage selected_item in listview1.SelectedItems)
                 {
                     if (!reset_flag)
                     {
                         SetImage(selected_item.Name);
                     }
+                }
+                if (listview1.SelectedIndex >= 0)
+                {
+                    ListViewItem item = (ListViewItem)listview1.ItemContainerGenerator.ContainerFromItem(listview1.SelectedItem);
+                    item.Focus();
                 }
             }
             catch { }
@@ -816,7 +827,7 @@ namespace Croquis_.NET_Framework_
                 thumbnailColumn.Width = new GridLength(0, GridUnitType.Star);
                 GridSplitterColumn.MinWidth = 0;
                 GridSplitterColumn.Width = new GridLength(0, GridUnitType.Auto);
-                Listview.IsEnabled = false;
+                listview1.IsEnabled = false;
             }
             else
             {
@@ -824,7 +835,7 @@ namespace Croquis_.NET_Framework_
                 thumbnailColumn.Width = old_thumbnailColumnWidth;
                 GridSplitterColumn.MinWidth = 10;
                 GridSplitterColumn.Width = new GridLength(7, GridUnitType.Auto);
-                Listview.IsEnabled = true;
+                listview1.IsEnabled = true;
 
             }
         }
