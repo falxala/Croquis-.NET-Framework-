@@ -75,21 +75,23 @@ namespace Croquis_.NET_Framework_
         public Guid Guid { get; set; }
     }
 
-    [SuppressUnmanagedCodeSecurity]
-    internal static class SafeNativeMethods
+    public class LogicalStringComparer :
+    System.Collections.IComparer,
+    System.Collections.Generic.IComparer<string>
     {
-        [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
-        public static extern int StrCmpLogicalW(string psz1, string psz2);
-    }
+        [System.Runtime.InteropServices.DllImport("shlwapi.dll",
+            CharSet = System.Runtime.InteropServices.CharSet.Unicode,
+            ExactSpelling = true)]
+        private static extern int StrCmpLogicalW(string x, string y);
 
-    public sealed class NaturalOrderComparer : IComparer
-    {
-        public int Compare(object a, object b)
+        public int Compare(string x, string y)
         {
-            // replace DataItem with the actual class of the items in the ListView
-            var lhs = (ListImage)a;
-            var rhs = (ListImage)b;
-            return SafeNativeMethods.StrCmpLogicalW(lhs.Name, rhs.Name);
+            return StrCmpLogicalW(x, y);
+        }
+
+        public int Compare(object x, object y)
+        {
+            return this.Compare(x.ToString(), y.ToString());
         }
     }
 
@@ -170,8 +172,17 @@ namespace Croquis_.NET_Framework_
         {
             //ファイル名を取得
             var fileNames = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
+                if (System.IO.Directory.Exists(fileNames[0]))
+                {
+                    //フォルダ内のファイル名を取得
+                    fileNames = System.IO.Directory.GetFiles(@fileNames[0], "*", System.IO.SearchOption.TopDirectoryOnly);
+                    Array.Sort(fileNames, new LogicalStringComparer());
+                }
+
                 Set_List(fileNames);
                 StartSlideshow(fileNames);
             }
@@ -245,11 +256,6 @@ namespace Croquis_.NET_Framework_
             reset_flag = false;
 
             //最初の1つ目のドロップフォルダなら
-            if (System.IO.Directory.Exists(fileNames[0]))
-            {
-                //フォルダ内のファイル名を取得
-                fileNames = System.IO.Directory.GetFiles(@fileNames[0], "*", System.IO.SearchOption.TopDirectoryOnly);
-            }
             
             if (IsRun == false)
                 await Slideshow(fileNames);
