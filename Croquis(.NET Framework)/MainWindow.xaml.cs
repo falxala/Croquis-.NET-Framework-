@@ -436,13 +436,13 @@ namespace Croquis_.NET_Framework_
                     }
                     break;
 
-                case Key.OemOpenBrackets:
+                case Key.OemCloseBrackets:
                     if (grid_size < 480)
                         grid_size += 4;
                     BuildView();
                     break;
 
-                case Key.OemCloseBrackets:
+                case Key.OemOpenBrackets:
                     if (grid_size > 10)
                         grid_size -= 4;
                     BuildView();
