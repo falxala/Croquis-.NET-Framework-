@@ -1,10 +1,13 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Security;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
@@ -65,8 +68,29 @@ namespace Croquis_.NET_Framework_
     public class ListImage
     {
         public string Name { get; set; }
+
+        public int Num { get; set; }
+
         public BitmapSource Image { get; set; }
         public Guid Guid { get; set; }
+    }
+
+    [SuppressUnmanagedCodeSecurity]
+    internal static class SafeNativeMethods
+    {
+        [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
+        public static extern int StrCmpLogicalW(string psz1, string psz2);
+    }
+
+    public sealed class NaturalOrderComparer : IComparer
+    {
+        public int Compare(object a, object b)
+        {
+            // replace DataItem with the actual class of the items in the ListView
+            var lhs = (ListImage)a;
+            var rhs = (ListImage)b;
+            return SafeNativeMethods.StrCmpLogicalW(lhs.Name, rhs.Name);
+        }
     }
 
     /// <summary>
@@ -120,6 +144,8 @@ namespace Croquis_.NET_Framework_
 
             HIdeThumbnail();
 
+            comboBox.Items.Add("First In First Out");
+            comboBox.Items.Add("Last In First Out");
             comboBox.Items.Add("Ascending");
             comboBox.Items.Add("Descending");
             comboBox.Items.Add("Random");
@@ -144,7 +170,7 @@ namespace Croquis_.NET_Framework_
         {
             //ファイル名を取得
             var fileNames = (string[])e.Data.GetData(DataFormats.FileDrop);
-            if (e.Data.GetDataPresent(DataFormats.FileDrop) && sw.IsRunning == false)
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 Set_List(fileNames);
                 StartSlideshow(fileNames);
@@ -156,14 +182,25 @@ namespace Croquis_.NET_Framework_
             ParallelOptions options = new ParallelOptions();
             options.MaxDegreeOfParallelism = 8;
             object lockobj = new object();
+            
+            int offset = 0;
+            if (listImages.Count != 0)
+                offset = listImages.Count;
+
+            foreach (var item in fileNames)
+            {
+                listImages.Add(new ListImage());
+            }
+
             await Task.Run(() =>
             {
                 Parallel.For(0, fileNames.Length, options, i =>
                 {
+                    int j = i + offset;
                     Task.Delay(100);
-                    ListImage image = new ListImage { Name = fileNames[i], Image = CreateThumbnail(fileNames[i]),Guid = Guid.NewGuid() };
+                    ListImage image = new ListImage { Name = fileNames[i], Image = CreateThumbnail(fileNames[i]), Guid = Guid.NewGuid(), Num = j };
                     if (image.Image != null)
-                        lock (lockobj) listImages.Add(image);
+                        lock (lockobj) listImages[j] = image;
                 });
             });
 
@@ -192,12 +229,12 @@ namespace Croquis_.NET_Framework_
             return thumbnail;
         }
 
-        bool wait_time;
+        bool IsRun = false;
         private async void StartSlideshow(string[] fileNames)
         {
             progressbar.Visibility = Visibility.Visible;
 
-            wait_time = true;
+            if(IsRun == false)
             for (int t = 3; t > 0; t--)
             {
                 text_pop(true);
@@ -205,8 +242,6 @@ namespace Croquis_.NET_Framework_
 
                 await Task.Delay(1000);
             }
-            wait_time = false;
-
             reset_flag = false;
 
             //最初の1つ目のドロップフォルダなら
@@ -215,14 +250,16 @@ namespace Croquis_.NET_Framework_
                 //フォルダ内のファイル名を取得
                 fileNames = System.IO.Directory.GetFiles(@fileNames[0], "*", System.IO.SearchOption.TopDirectoryOnly);
             }
-
-            await Slideshow(fileNames);
+            
+            if (IsRun == false)
+                await Slideshow(fileNames);
         }
 
         private async Task Slideshow(string[] fileNames)
         {
-
             text_pop(false);
+
+            IsRun = true;
 
             try
             {
@@ -243,7 +280,7 @@ namespace Croquis_.NET_Framework_
                 } while (Listview.SelectedIndex < listImages.Count);
                 image_.Source = imgsourse;
                 navigate_vm.Message = "Finish!";
-                //FileList.Clear();
+
             }
             catch (Exception)
             {
@@ -259,10 +296,12 @@ namespace Croquis_.NET_Framework_
                 }
                 else
                 {
-                    text_pop(true);
-                    await Task.Delay(3000);
                     if (!reset_flag)
+                    {
+                        text_pop(true);
+                        await Task.Delay(3000);
                         Reset();
+                    }
                 }
             }
         }
@@ -451,6 +490,7 @@ namespace Croquis_.NET_Framework_
 
         private void Reset()
         {
+            IsRun = false;
             sw.Stop();
             sw.Reset();
             text_pop(true);
@@ -465,7 +505,7 @@ namespace Croquis_.NET_Framework_
             reset_flag = true;
             Listview.SelectedIndex = -1;
             CurrentImage = "";
-            wait_time = false;
+            IsRun = false;
         }
 
         private void pause()
@@ -661,7 +701,8 @@ namespace Croquis_.NET_Framework_
         {
             try
             {
-                if (e.GetPosition(this).Y > SystemParameters.CaptionHeight)
+                var a = VisualTreeHelper.HitTest(this, e.GetPosition(this)).VisualHit;
+                if (VisualTreeHelper.HitTest(this,e.GetPosition(this)).VisualHit != Panel)
                     DragMove();
             }
             catch { }
@@ -669,8 +710,8 @@ namespace Croquis_.NET_Framework_
 
         private void mainwindow_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (!reset_flag || wait_time)
-                return;
+            //if (!reset_flag || wait_time) return;
+
             var dialog = new OpenFileDialog();
 
             dialog.Multiselect = true;
@@ -768,21 +809,21 @@ namespace Croquis_.NET_Framework_
                 thumbnailColumn.MinWidth = 0;
                 thumbnailColumn.Width = new GridLength(0, GridUnitType.Star);
                 GridSplitterColumn.MinWidth = 0;
-                GridSplitterColumn.Width = new GridLength(0, GridUnitType.Star);
+                GridSplitterColumn.Width = new GridLength(0, GridUnitType.Auto);
                 Listview.IsEnabled = false;
             }
             else
             {
                 thumbnailColumn.MinWidth = 160;
                 thumbnailColumn.Width = old_thumbnailColumnWidth;
-                GridSplitterColumn.MinWidth = 7;
-                GridSplitterColumn.Width = new GridLength(1, GridUnitType.Star);
+                GridSplitterColumn.MinWidth = 10;
+                GridSplitterColumn.Width = new GridLength(7, GridUnitType.Auto);
                 Listview.IsEnabled = true;
 
             }
         }
 
-        private void Rectangle_MouseDown(object sender, MouseButtonEventArgs e)
+        private void Panel_MouseDown(object sender, MouseButtonEventArgs e)
         {
             HIdeThumbnail();
         }
@@ -808,17 +849,26 @@ namespace Croquis_.NET_Framework_
             {
                 case 0:
                     cv.SortDescriptions.Clear();
-                    cv.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
+                    cv.SortDescriptions.Add(new SortDescription("Num", ListSortDirection.Ascending));
                     break;
                 case 1:
                     cv.SortDescriptions.Clear();
-                    cv.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Descending));
+                    cv.SortDescriptions.Add(new SortDescription("Num", ListSortDirection.Descending));
                     break;
                 case 2:
+                    cv.SortDescriptions.Clear();
+                    cv.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
+                    break;
+                case 3:
+                    cv.SortDescriptions.Clear();
+                    cv.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Descending));
+                    break;
+                case 4:
                     cv.SortDescriptions.Clear();
                     cv.SortDescriptions.Add(new SortDescription("Guid", ListSortDirection.Ascending));
                     break;
             }
         }
+
     }
 }
