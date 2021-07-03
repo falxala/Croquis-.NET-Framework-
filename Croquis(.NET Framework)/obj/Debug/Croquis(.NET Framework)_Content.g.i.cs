@@ -8,6 +8,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("magick.native-q16-x86.dll")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("magick.native-q8-x86.dll")]
 
 

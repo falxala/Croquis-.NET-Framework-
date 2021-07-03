@@ -13,7 +13,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using shapesPath = System.Windows.Shapes.Path;
-using ImageMagick;
 using System.Windows.Interop;
 
 namespace Croquis_.NET_Framework_
@@ -68,9 +67,7 @@ namespace Croquis_.NET_Framework_
     public class ListImage
     {
         public string Name { get; set; }
-
         public int Num { get; set; }
-
         public BitmapSource Image { get; set; }
         public Guid Guid { get; set; }
     }
@@ -100,6 +97,7 @@ namespace Croquis_.NET_Framework_
     /// </summary>
     public partial class MainWindow : Window
     {
+        int maxWidth = 1000;
         string CurrentImage = "";
         System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
         int Interval_time = 15;
@@ -152,6 +150,10 @@ namespace Croquis_.NET_Framework_
             comboBox.Items.Add("Descending");
             comboBox.Items.Add("Random");
             comboBox.SelectedIndex = 0;
+            if (SystemParameters.PrimaryScreenWidth > SystemParameters.PrimaryScreenHeight)
+                maxWidth = (int)SystemParameters.PrimaryScreenWidth;
+            else
+                maxWidth = (int)SystemParameters.PrimaryScreenHeight;
         }
 
 
@@ -209,7 +211,7 @@ namespace Croquis_.NET_Framework_
                 {
                     int j = i + offset;
                     Task.Delay(100);
-                    ListImage image = new ListImage { Name = fileNames[i], Image = CreateThumbnail(fileNames[i]), Guid = Guid.NewGuid(), Num = j };
+                    ListImage image = new ListImage { Name = fileNames[i], Image = ResizeImage(fileNames[i],100,true), Guid = Guid.NewGuid(), Num = j };
                     if (image.Image != null)
                         lock (lockobj) listImages[j] = image;
                 });
@@ -217,27 +219,29 @@ namespace Croquis_.NET_Framework_
 
         }
 
-        private BitmapSource CreateThumbnail(string uri)
+        private BitmapSource ResizeImage(string uri,int pixel,bool thumbnail_flag)
         {
-            BitmapImage thumbnail = new BitmapImage();
             try
             {
                 using (FileStream stream = File.OpenRead(uri))
                 {
+                    BitmapImage thumbnail = new BitmapImage();
                     thumbnail.BeginInit();
                     thumbnail.CacheOption = BitmapCacheOption.OnLoad;
+                    thumbnail.CreateOptions = BitmapCreateOptions.None;
+                    if (thumbnail_flag)
+                        thumbnail.DecodePixelWidth = pixel;
                     thumbnail.StreamSource = stream;
-                    thumbnail.DecodePixelWidth = 100;
                     thumbnail.EndInit();
                     thumbnail.Freeze();
                     stream.Close();
+                    return thumbnail;
                 }
             }
             catch
             {
                 return null;
             }
-            return thumbnail;
         }
 
         bool IsRun = false;
@@ -312,26 +316,57 @@ namespace Croquis_.NET_Framework_
             }
         }
 
+        WriteableBitmap m_processedBitmap = null;
+        BitmapImage m_srcBitmap = null;
         private bool SetImage(string image_name)
         {
             try
             {
                 CurrentImage = image_name;
+
+                m_srcBitmap = new BitmapImage();
+                FileStream stream = File.OpenRead(CurrentImage);
+                m_srcBitmap.BeginInit();
+                m_srcBitmap.CacheOption = BitmapCacheOption.OnLoad;
+                m_srcBitmap.StreamSource = stream;
+                var metaData = BitmapFrame.Create(stream).Metadata as BitmapMetadata;
+                stream.Position = 0;
+                string query = "/app1/ifd/exif:{uint=274}";
+                if (metaData.ContainsQuery(query))
+                {
+
+                    switch (Convert.ToUInt32(metaData.GetQuery(query)))
+                    {
+                        case 3:
+                            m_srcBitmap.Rotation = Rotation.Rotate180;
+                            break;
+                        case 6:
+                            m_srcBitmap.Rotation = Rotation.Rotate90;
+                            break;
+                        case 8:
+                            m_srcBitmap.Rotation = Rotation.Rotate270;
+                            break;
+                        default:
+                            m_srcBitmap.Rotation = Rotation.Rotate0;
+                            break;
+                    }
+                }
+
+                m_srcBitmap.EndInit();
+                m_srcBitmap.Freeze();
+                stream.Close();
+
+                m_processedBitmap = new WriteableBitmap(new FormatConvertedBitmap(m_srcBitmap, PixelFormats.Bgra32, null, 0));
+
                 if (grayscale_flag)
-                    image_.Source = ToGrayScale(CurrentImage);
+                {
+                    image_.Source = ToGrayscale(m_processedBitmap);
+                }
                 else
                 {
-                    BitmapImage bmpImage = new BitmapImage();
-                    using (FileStream stream = File.OpenRead(image_name))
-                    {
-                        bmpImage.BeginInit();
-                        bmpImage.CacheOption = BitmapCacheOption.OnLoad;
-                        bmpImage.StreamSource = stream;
-                        bmpImage.EndInit();
-                        stream.Close();
-                    }
-                    image_.Source = bmpImage;
+                    image_.Source = m_processedBitmap;
                 }
+
                 return true;
 
             }
@@ -513,6 +548,7 @@ namespace Croquis_.NET_Framework_
             listview1.SelectedIndex = -1;
             CurrentImage = "";
             IsRun = false;
+            GC.Collect();
         }
 
         private void pause()
@@ -674,23 +710,59 @@ namespace Croquis_.NET_Framework_
                 info_label.Visibility = Visibility.Visible;
         }
 
-        private BitmapSource ToGrayScale(string src)
+
+        
+        //参考　http://www.pronowa.com/room/wpf_imaging003.html
+        private WriteableBitmap ToGrayscale(WriteableBitmap m_processedBitmap)
         {
-            using (var myMagick = new MagickImage(src))
+            if (m_processedBitmap == null)
             {
-                myMagick.RenderingIntent = ImageMagick.RenderingIntent.Perceptual;
-                myMagick.BlackPointCompensation = true;
-                myMagick.ColorSpace = ColorSpace.Gray;
-                return ConvertBitmap(myMagick.ToBitmap());
+                return null;
             }
-        }
+            int channel = 4;
 
-        public static BitmapSource ConvertBitmap(System.Drawing.Bitmap source)
-        {
-            return Imaging.CreateBitmapSourceFromHBitmap(source.GetHbitmap(), IntPtr.Zero,
-                 Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-        }
+            int width = m_processedBitmap.PixelWidth;
+            int height = m_processedBitmap.PixelHeight;
+            int stride = width * 4;
+            int res = stride - channel * width;
+            m_processedBitmap.Lock();
+            unsafe
+            {
+                byte* pBackBuffer =
+                    (byte*)(void*)m_processedBitmap.BackBuffer;
+                for (int y = 0; y < height; y++)
+                {
+                    for (int x = 0; x < width; x++)
+                    {
+                        byte b = pBackBuffer[0];
+                        byte g = pBackBuffer[1];
+                        byte r = pBackBuffer[2];
 
+                        int gray =
+                            (int)(0.29811 * r + 0.58661 * g + 0.11448 * b);
+                        if (gray > 255)
+                        {
+                            gray = 255;
+                        }
+                        if (gray < 0)
+                        {
+                            gray = 0;
+                        }
+
+                        pBackBuffer[0] = (byte)gray;
+                        pBackBuffer[1] = (byte)gray;
+                        pBackBuffer[2] = (byte)gray;
+
+                        pBackBuffer += channel;
+                    }
+                    pBackBuffer += res;
+                }
+            }
+            m_processedBitmap.AddDirtyRect(
+                new Int32Rect(0, 0, width, height));
+            m_processedBitmap.Unlock();
+            return m_processedBitmap;
+        }
 
         private void GrayScale(object sender, RoutedEventArgs e)
         {
@@ -702,9 +774,9 @@ namespace Croquis_.NET_Framework_
                 grayscale_flag = !grayscale_flag;
 
                 if (grayscale_flag == true)
-                    image_.Source = ToGrayScale(CurrentImage);
+                    SetImage(CurrentImage);
                 else
-                    image_.Source = new BitmapImage(new Uri(CurrentImage));
+                    SetImage(CurrentImage);
             }
             catch { }
         }
@@ -887,5 +959,26 @@ namespace Croquis_.NET_Framework_
             }
         }
 
+    }
+    static class Extensions // 拡張メソッドは非ジェネリック静的クラスで定義される必要がある
+    {
+        static public byte[] ImageSourceToBytes(BitmapEncoder encoder, ImageSource imageSource)
+        {
+            byte[] bytes = null;
+            var bitmapSource = imageSource as BitmapSource;
+
+            if (bitmapSource != null)
+            {
+                encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
+
+                using (var stream = new MemoryStream())
+                {
+                    encoder.Save(stream);
+                    bytes = stream.ToArray();
+                }
+            }
+
+            return bytes;
+        }
     }
 }
