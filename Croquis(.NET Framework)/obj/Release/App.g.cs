@@ -59,7 +59,7 @@ namespace Croquis_.NET_Framework_ {
             
             #line default
             #line hidden
-            System.Uri resourceLocater = new System.Uri("/Croquis(.NET Framework);component/app.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/Croquis;component/app.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\App.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

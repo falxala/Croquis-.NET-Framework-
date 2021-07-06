@@ -7,7 +7,7 @@
         xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2" 
         xmlns:local="clr-namespace:Croquis_.NET_Framework_"
         mc:Ignorable="d"
-        Title="Croquis Slideshow" AllowDrop="True" PreviewKeyDown="mainwindow_PreviewKeyDown" Height="400" Width="600" Loaded="mainwindow_Loaded" MinWidth="480" MinHeight="360" IsTabStop="False" PreviewMouseDoubleClick="mainwindow_PreviewMouseDoubleClick">
+        Title="Croquis Slideshow" AllowDrop="True" PreviewKeyDown="mainwindow_PreviewKeyDown" Height="400" Width="600" Loaded="mainwindow_Loaded" MinWidth="480" MinHeight="360" IsTabStop="False" PreviewMouseDoubleClick="mainwindow_PreviewMouseDoubleClick" Closing="mainwindow_Closing">
 
     <Window.Resources>
         <Style TargetType="ComboBoxItem">
@@ -306,16 +306,18 @@
             <ColumnDefinition x:Name="thumbnailColumn" Width="155*" MinWidth="155"/>
         </Grid.ColumnDefinitions>
 
-        <Grid x:Name="drawingGrid" Margin="0,0,0,0" Background="#00000000" MouseLeftButtonDown="DragMove_PreviewMouseLeftButtonDown">
+        <Grid x:Name="drawingGrid" Margin="0,0,0,0" Background="#00000000" MouseLeftButtonDown="DragMove_PreviewMouseLeftButtonDown" PreviewDragOver="Image_PreviewDragOver" PreviewDrop="Image_PreviewDrop">
             <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition x:Name="RowDefinition" Height="7"/>
+                <RowDefinition Height="50*"/>
+                <RowDefinition Height="30*"/>
+                <RowDefinition Height="50*"/>
+                <RowDefinition x:Name="RowDefinition" Height="{Binding Num}"/>
             </Grid.RowDefinitions>
 
             <Grid.ContextMenu>
                 <fw:AcrylicContextMenu HasDropShadow="True">
                     <MenuItem Header="Interval">
-                        <MenuItem x:Name="item10" Header="15s" Click="item10_Click"/>
+                        <MenuItem x:Name="item10" Header="15s" Click="item15_Click"/>
                         <MenuItem x:Name="item30" Header="30s" Click="item30_Click"/>
                         <MenuItem x:Name="item60" Header="60s" Click="item60_Click"/>
                         <MenuItem x:Name="item90" Header="90s" Click="item90_Click"/>
@@ -323,13 +325,15 @@
                         <MenuItem x:Name="item300" Header="5min" Click="item300_Click"/>
                         <MenuItem x:Name="item600" Header="10min" Click="item600_Click"/>
                         <MenuItem x:Name="item900" Header="15min" Click="item900_Click"/>
+                        <MenuItem x:Name="itemCustomInterval" Header="{Binding}" Click="itemCustomInterval_Click"/>
                     </MenuItem>
                     <Separator />
                     <!--
                     <MenuItem x:Name="MenuStart" Header="Start Slideshow"  InputGestureText="" Click="MenuStart_Click"/>
                     -->
-                    <MenuItem Header="Pause" Click="Pause" InputGestureText="Space"/>
+                    <MenuItem Header="Pause/Resume" Click="Pause" InputGestureText="Space"/>
                     <MenuItem x:Name="MenuRepeat" Header="Repeat" Click="MenuRepeat_Click"/>
+                    <MenuItem x:Name="MenuPreparationTime" Header="PreparationTime" Click="MenuPreparationTime_Click"/>
                     <Separator />
                     <MenuItem x:Name="FullScreen" Header="FullScreen" Click="FullScreen_Click" InputGestureText="Enter"/>
                     <MenuItem Header="GrayScale ON/OFF" Click="GrayScale" InputGestureText="C or S"/>
@@ -348,21 +352,20 @@
             </Grid.ContextMenu>
 
 
-            <TextBlock x:Name="text"  Text="{Binding  Message}" FontFamily="Arial Black" FontSize="48" UseLayoutRounding="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black" Opacity="0.8" TextWrapping="WrapWithOverflow" TextAlignment="Center"/>
+            <Image x:Name="image_" AllowDrop="True" Grid.RowSpan="3"/>
 
+            <Viewbox Margin="10" Grid.Row="1">
+                <TextBlock x:Name="text"  Text="{Binding Message}" FontFamily="Arial Black" FontSize="60" UseLayoutRounding="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black" Opacity="0.8" TextWrapping="WrapWithOverflow" TextAlignment="Center"/>
+            </Viewbox>
 
-            <Image x:Name="image_" AllowDrop="True" PreviewDragOver="Image_PreviewDragOver" PreviewDrop="Image_PreviewDrop"/>
-
-
-            <Canvas Name="canvas"
+            <Canvas x:Name="canvas"
                 SnapsToDevicePixels="True"
                 Loaded="canvas_Loaded"
-                SizeChanged="canvas_SizeChanged" Visibility="Hidden">
-            </Canvas>
+                SizeChanged="canvas_SizeChanged" Visibility="Hidden" Grid.RowSpan="3"/>
 
-            <ProgressBar x:Name="progressbar" Grid.Row="1" Foreground="#FFFF3030" Background="#4C000000" BorderBrush="{x:Null}" VerticalAlignment="Stretch"/>
-            <Label x:Name="info_label" Content="{Binding info_Message}" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#7FFFFFFF" RenderTransformOrigin="0.5,0.5" Padding="5,0,5,2" FontSize="14" FontWeight="Bold"/>
-            <DockPanel x:Name="Panel" Grid.RowSpan="2" HorizontalAlignment="Right" Width="20" Cursor="Hand" Background="#00000000" Opacity="0.5" PreviewMouseLeftButtonDown="Panel_MouseDown"/>
+            <ProgressBar x:Name="progressbar" Grid.Row="3" Foreground="{Binding ProgressColor}" Background="#4C000000" BorderBrush="{x:Null}" VerticalAlignment="Stretch"/>
+            <Label x:Name="info_label" Content="{Binding info_Message}" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#7FFFFFFF" RenderTransformOrigin="0.5,0.5" Padding="5,0,5,2" FontSize="{Binding InfoTextSize}" FontWeight="Bold"/>
+            <DockPanel x:Name="Panel" Grid.RowSpan="4" HorizontalAlignment="Right" Width="20" Cursor="Hand" Background="#00000000" Opacity="0.5" PreviewMouseLeftButtonDown="Panel_MouseDown"/>
         </Grid>
 
         <Grid Grid.Column="2" Background="White">
@@ -374,7 +377,7 @@
                 </ListView.ItemsPanel>
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <Grid Width="127" Height="127">
+                        <Grid Width="{Binding ThumbnailGridSize}" Height="{Binding ThumbnailGridSize}">
                             <Image Source="{Binding Image}"></Image>
                             <!--
                         <TextBlock Text="{Binding  Path=Title}"></TextBlock>
