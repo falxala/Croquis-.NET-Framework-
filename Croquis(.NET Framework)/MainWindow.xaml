@@ -6,10 +6,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2" 
         xmlns:local="clr-namespace:Croquis_.NET_Framework_"
+        xmlns:properties="clr-namespace:Croquis_.NET_Framework_.Properties"
         mc:Ignorable="d"
-        Title="Croquis Slideshow" AllowDrop="True" PreviewKeyDown="mainwindow_PreviewKeyDown" Height="400" Width="600" Loaded="mainwindow_Loaded" MinWidth="480" MinHeight="360" IsTabStop="False" PreviewMouseDoubleClick="mainwindow_PreviewMouseDoubleClick" Closing="mainwindow_Closing">
+        Title="Croquis Slideshow" AllowDrop="True" PreviewKeyDown="mainwindow_PreviewKeyDown" Height="400" Width="600" Loaded="mainwindow_Loaded" MinWidth="480" MinHeight="360" IsTabStop="False" PreviewMouseDoubleClick="mainwindow_PreviewMouseDoubleClick" Closing="mainwindow_Closing" MouseMove="mainwindow_MouseMove">
 
     <Window.Resources>
+        <Style  TargetType="{x:Type ContextMenu}">
+            <Setter Property="Visibility" Value="Visible" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsLockedNorthGrid}" Value="False">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
         <Style TargetType="ComboBoxItem">
             <Setter Property="BorderBrush" Value="White"/>
             <Setter Property="Background" Value="White" />
@@ -309,45 +319,45 @@
         <Grid x:Name="drawingGrid" Margin="0,0,0,0" Background="#00000000" MouseLeftButtonDown="DragMove_PreviewMouseLeftButtonDown" PreviewDragOver="Image_PreviewDragOver" PreviewDrop="Image_PreviewDrop">
             <Grid.RowDefinitions>
                 <RowDefinition Height="50*"/>
-                <RowDefinition Height="30*"/>
+                <RowDefinition Height="25*"/>
                 <RowDefinition Height="50*"/>
                 <RowDefinition x:Name="RowDefinition" Height="{Binding Num}"/>
             </Grid.RowDefinitions>
 
             <Grid.ContextMenu>
                 <fw:AcrylicContextMenu HasDropShadow="True">
-                    <MenuItem Header="Interval">
-                        <MenuItem x:Name="item10" Header="15s" Click="item15_Click"/>
-                        <MenuItem x:Name="item30" Header="30s" Click="item30_Click"/>
-                        <MenuItem x:Name="item60" Header="60s" Click="item60_Click"/>
-                        <MenuItem x:Name="item90" Header="90s" Click="item90_Click"/>
-                        <MenuItem x:Name="item180" Header="3min" Click="item180_Click"/>
-                        <MenuItem x:Name="item300" Header="5min" Click="item300_Click"/>
-                        <MenuItem x:Name="item600" Header="10min" Click="item600_Click"/>
-                        <MenuItem x:Name="item900" Header="15min" Click="item900_Click"/>
+                    <MenuItem Header="{x:Static properties:Resources.MenuInterval}">
+                        <MenuItem x:Name="item10" Header="{x:Static properties:Resources.Menu15s}" Click="item15_Click"/>
+                        <MenuItem x:Name="item30" Header="{x:Static properties:Resources.Menu30s}" Click="item30_Click"/>
+                        <MenuItem x:Name="item60" Header="{x:Static properties:Resources.Menu60s}" Click="item60_Click"/>
+                        <MenuItem x:Name="item90" Header="{x:Static properties:Resources.Menu90s}" Click="item90_Click"/>
+                        <MenuItem x:Name="item180" Header="{x:Static properties:Resources.Menu180s}" Click="item180_Click"/>
+                        <MenuItem x:Name="item300" Header="{x:Static properties:Resources.Menu300s}" Click="item300_Click"/>
+                        <MenuItem x:Name="item600" Header="{x:Static properties:Resources.Menu600s}" Click="item600_Click"/>
+                        <MenuItem x:Name="item900" Header="{x:Static properties:Resources.Menu900s}" Click="item900_Click"/>
                         <MenuItem x:Name="itemCustomInterval" Header="{Binding}" Click="itemCustomInterval_Click"/>
                     </MenuItem>
                     <Separator />
                     <!--
                     <MenuItem x:Name="MenuStart" Header="Start Slideshow"  InputGestureText="" Click="MenuStart_Click"/>
                     -->
-                    <MenuItem Header="Pause/Resume" Click="Pause" InputGestureText="Space"/>
-                    <MenuItem x:Name="MenuRepeat" Header="Repeat" Click="MenuRepeat_Click"/>
-                    <MenuItem x:Name="MenuPreparationTime" Header="PreparationTime" Click="MenuPreparationTime_Click"/>
+                    <MenuItem Header="{x:Static properties:Resources.MenuPauseResume}" Click="Pause" InputGestureText="Space"/>
+                    <MenuItem x:Name="MenuRepeat" Header="{x:Static properties:Resources.MenuRepeat}" Click="MenuRepeat_Click"/>
+                    <MenuItem x:Name="MenuPreparationTime" Header="{x:Static properties:Resources.MenuPreparationTime}" Click="MenuPreparationTime_Click"/>
                     <Separator />
-                    <MenuItem x:Name="FullScreen" Header="FullScreen" Click="FullScreen_Click" InputGestureText="Enter"/>
-                    <MenuItem Header="GrayScale ON/OFF" Click="GrayScale" InputGestureText="C or S"/>
-                    <MenuItem Header="Grid ON/OFF" Click="Grid" InputGestureText="G"/>
-                    <MenuItem x:Name="menuListview" Header="ListView ON/OFF" InputGestureText="Tab" Click="menuListview_Click"/>
-                    <MenuItem x:Name="MenuInfo" Header="Status ON/OFF" Click="info_Click" InputGestureText="I"/>
-                    <MenuItem x:Name="menuProgress" Header="Progress ON/OFF" Click="menuProgress_Click" InputGestureText="P"/>
-                    <MenuItem Header="Background" InputGestureText="B">
-                        <MenuItem x:Name="MenuWhiteBackground" Header="White" Click="White"/>
-                        <MenuItem x:Name="MenuBlackBackground" Header="Black" Click="Black"/>
+                    <MenuItem x:Name="FullScreen" Header="{x:Static properties:Resources.MenuFullScreen}" Click="FullScreen_Click" InputGestureText="Enter"/>
+                    <MenuItem Header="{x:Static properties:Resources.MenuGrayScale}" Click="GrayScale" InputGestureText="C or S"/>
+                    <MenuItem Header="{x:Static properties:Resources.MenuGrid}" Click="Grid" InputGestureText="G"/>
+                    <MenuItem x:Name="menuListview" Header="{x:Static properties:Resources.MenuListview}" InputGestureText="Tab" Click="menuListview_Click"/>
+                    <MenuItem x:Name="MenuInfo" Header="{x:Static properties:Resources.MenuStatus}" Click="info_Click" InputGestureText="I"/>
+                    <MenuItem x:Name="menuProgress" Header="{x:Static properties:Resources.MenuProgress}" Click="menuProgress_Click" InputGestureText="P"/>
+                    <MenuItem Header="{x:Static properties:Resources.MenuBackgroundColor}" InputGestureText="B">
+                        <MenuItem x:Name="MenuWhiteBackground" Header="{x:Static properties:Resources.MenuWhite}" Click="White"/>
+                        <MenuItem x:Name="MenuBlackBackground" Header="{x:Static properties:Resources.MenuBlack}" Click="Black"/>
                     </MenuItem>
                     <Separator></Separator>
-                    <MenuItem x:Name="reset" Header="Reset" Click="reset_Click"/>
-                    <MenuItem x:Name="quit" Header="Quit" Click="quit_Click"/>
+                    <MenuItem x:Name="reset" Header="{x:Static properties:Resources.MenuReset}" Click="reset_Click"/>
+                    <MenuItem x:Name="quit" Header="{x:Static properties:Resources.MenuQuit}" Click="quit_Click"/>
                 </fw:AcrylicContextMenu>
             </Grid.ContextMenu>
 
@@ -365,8 +375,9 @@
 
             <ProgressBar x:Name="progressbar" Grid.Row="3" Foreground="{Binding ProgressColor}" Background="#4C000000" BorderBrush="{x:Null}" VerticalAlignment="Stretch"/>
             <Label x:Name="info_label" Content="{Binding info_Message}" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#7FFFFFFF" RenderTransformOrigin="0.5,0.5" Padding="5,0,5,2" FontSize="{Binding InfoTextSize}" FontWeight="Bold"/>
-            <DockPanel x:Name="Panel" Grid.RowSpan="4" HorizontalAlignment="Right" Width="20" Cursor="Hand" Background="#00000000" Opacity="0.5" PreviewMouseLeftButtonDown="Panel_MouseDown"/>
+            <DockPanel x:Name="Panel" Grid.RowSpan="4" HorizontalAlignment="Right" Width="24" Cursor="Hand" Background="#00000000" Opacity="0.5" PreviewMouseLeftButtonDown="Panel_MouseDown" MouseEnter="Panel_MouseEnter" MouseLeave="Panel_MouseLeave"/>
         </Grid>
+
 
         <Grid Grid.Column="2" Background="White">
             <ListView x:Name="listview1" ItemsSource="{Binding}"  ScrollViewer.HorizontalScrollBarVisibility="Disabled" BorderBrush="White" SelectionChanged="Listview_SelectionChanged" Focusable="False" Margin="0,32,0,0" SelectionMode="Single" PreviewDrop="Image_PreviewDrop" PreviewDragOver="Image_PreviewDragOver">
@@ -386,7 +397,19 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <ComboBox Style="{DynamicResource ComboBoxStyle1}" x:Name="comboBox" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="27" BorderBrush="#FFF0F0F0" Foreground="Black" Background="#FFF0F0F0" SelectionChanged="comboBox_SelectionChanged" Focusable="False" IsTabStop="False" FontSize="14" IsReadOnly="True" BorderThickness="2"/>
+            <ComboBox Style="{DynamicResource ComboBoxStyle1}" x:Name="comboBox" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="27" BorderBrush="#FFF0F0F0" Foreground="Black" Background="#FFF0F0F0" SelectionChanged="comboBox_SelectionChanged" Focusable="False" IsTabStop="False" FontSize="14" IsReadOnly="True" BorderThickness="2" FontFamily="Meiryo UI">
+                <ComboBox.ContextMenu>
+                    <fw:AcrylicContextMenu HasDropShadow="True">
+                        <MenuItem x:Name="MenuGenerateRandomNum" Header="{x:Static properties:Resources.MenuGenerateRandomNum}" Click="MenuGenerateRandomNum_Click"/>
+                        <MenuItem x:Name="ScrollIntoView" Header="{x:Static properties:Resources.ScrollIntoView}" Click="ScrollIntoView_Click"/>
+                    </fw:AcrylicContextMenu>
+                    </ComboBox.ContextMenu>
+                <ComboBoxItem Content="{x:Static properties:Resources.CBItemFIFO}"/>
+                <ComboBoxItem Content="{x:Static properties:Resources.CBItemLIFO}"/>
+                <ComboBoxItem Content="{x:Static properties:Resources.CBItemAscending}"/>
+                <ComboBoxItem Content="{x:Static properties:Resources.CBItemDescending}"/>
+                <ComboBoxItem Content="{x:Static properties:Resources.CBItemRandom}"/>
+            </ComboBox>
         </Grid>
         <GridSplitter x:Name="GridSplitter" Grid.Column="1" HorizontalAlignment="Stretch" Focusable="False" PreviewMouseLeftButtonUp="GridSplitter_PreviewMouseLeftButtonUp" PreviewMouseLeftButtonDown="GridSplitter_PreviewMouseLeftButtonDown"/>
 

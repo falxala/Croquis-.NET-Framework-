@@ -118,97 +118,93 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="CBItemAscending" xml:space="preserve">
-    <value>Ascending</value>
+    <value>昇順</value>
   </data>
   <data name="CBItemDescending" xml:space="preserve">
-    <value>Descending</value>
+    <value>降順</value>
   </data>
   <data name="CBItemFIFO" xml:space="preserve">
-    <value>First In First Out</value>
+    <value>FIFO（入力順）</value>
   </data>
   <data name="CBItemLIFO" xml:space="preserve">
-    <value>Last In First Out</value>
+    <value>LIFO（入力逆順）</value>
   </data>
   <data name="CBItemRandom" xml:space="preserve">
-    <value>Random</value>
-  </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="icon255x255" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\icon255x255.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>ランダム</value>
   </data>
   <data name="Menu15s" xml:space="preserve">
-    <value>15s</value>
+    <value>15秒</value>
   </data>
   <data name="Menu180s" xml:space="preserve">
-    <value>3min</value>
+    <value>3分</value>
   </data>
   <data name="Menu300s" xml:space="preserve">
-    <value>5min</value>
+    <value>5分</value>
   </data>
   <data name="Menu30s" xml:space="preserve">
-    <value>30s</value>
+    <value>30秒</value>
   </data>
   <data name="Menu600s" xml:space="preserve">
-    <value>10min</value>
+    <value>10分</value>
   </data>
   <data name="Menu60s" xml:space="preserve">
-    <value>60s</value>
+    <value>60秒</value>
   </data>
   <data name="Menu900s" xml:space="preserve">
-    <value>15min</value>
+    <value>15分</value>
   </data>
   <data name="Menu90s" xml:space="preserve">
-    <value>90s</value>
+    <value>90秒</value>
   </data>
   <data name="MenuBackgroundColor" xml:space="preserve">
-    <value>backgroundColor</value>
+    <value>背景色</value>
   </data>
   <data name="MenuBlack" xml:space="preserve">
-    <value>Black</value>
+    <value>黒</value>
   </data>
   <data name="MenuFullScreen" xml:space="preserve">
-    <value>FullScreen</value>
+    <value>フルスクリーン表示</value>
   </data>
   <data name="MenuGenerateRandomNum" xml:space="preserve">
-    <value>Generate random numbers</value>
+    <value>乱数を生成</value>
   </data>
   <data name="MenuGrayScale" xml:space="preserve">
-    <value>GrayScale</value>
+    <value>グレースケール表示</value>
   </data>
   <data name="MenuGrid" xml:space="preserve">
-    <value>Grid</value>
+    <value>グリッド表示</value>
   </data>
   <data name="MenuInterval" xml:space="preserve">
-    <value>Interval</value>
+    <value>表示間隔</value>
   </data>
   <data name="MenuListview" xml:space="preserve">
-    <value>ListView</value>
+    <value>リストビュー展開</value>
   </data>
   <data name="MenuPauseResume" xml:space="preserve">
-    <value>Pause/Resume</value>
+    <value>再生/一時停止</value>
   </data>
   <data name="MenuPreparationTime" xml:space="preserve">
-    <value>PreparationTime</value>
+    <value>準備時間</value>
   </data>
   <data name="MenuProgress" xml:space="preserve">
-    <value>ProgressBar</value>
+    <value>シークバー表示</value>
   </data>
   <data name="MenuQuit" xml:space="preserve">
-    <value>Quit</value>
+    <value>終了</value>
   </data>
   <data name="MenuRepeat" xml:space="preserve">
-    <value>Repeat</value>
+    <value>リピート</value>
   </data>
   <data name="MenuReset" xml:space="preserve">
-    <value>Reset</value>
+    <value>リセット</value>
   </data>
   <data name="MenuStatus" xml:space="preserve">
-    <value>Status</value>
+    <value>ステータス情報</value>
   </data>
   <data name="MenuWhite" xml:space="preserve">
-    <value>White</value>
+    <value>白</value>
   </data>
   <data name="ScrollIntoView" xml:space="preserve">
-    <value>ScrollIntoView</value>
+    <value>選択アイテムまでスクロール</value>
   </data>
 </root>

@@ -13,7 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using shapesPath = System.Windows.Shapes.Path;
-using System.Windows.Interop;
+using System.Windows.Threading;
 
 namespace Croquis_.NET_Framework_
 {
@@ -149,6 +149,12 @@ namespace Croquis_.NET_Framework_
     /// </summary>
     public partial class MainWindow : Window
     {
+        //カーソルを隠すための変数
+        private DispatcherTimer _timer;
+        private const int HIDE_CURSOR_TIME = 3;//秒
+        private bool isHiddenCursor;
+        private Point previousPoint;
+
         int maxWidth = 1000;
         string CurrentImage = "";
         System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
@@ -191,8 +197,28 @@ namespace Croquis_.NET_Framework_
             progressbar.DataContext = vm;
             vm.ProgressColor = appSettings.ProgressBarColor;
 
+            //カーソルを自動で隠すためのタイマーインスタンス
+            _timer = new DispatcherTimer(DispatcherPriority.Background);
+            _timer.Interval = new TimeSpan(0, 0, HIDE_CURSOR_TIME);
+            _timer.Tick += (e, s) => { TimerMethod(); };
+            this.Closing += (e, s) => { _timer.Stop(); };
+
+
             RenderOptions.SetBitmapScalingMode(image_, BitmapScalingMode.Fant);
         }
+
+        private void TimerMethod()
+        {
+            _timer.Stop();
+
+            if (!isHiddenCursor && WindowState == WindowState.Maximized)
+            {
+                // カーソルが隠れていないかつ画面最大化のときだけ隠す
+                Cursor = Cursors.None;
+                isHiddenCursor = true;
+            }
+        }
+
 
         private void mainwindow_Loaded(object sender, RoutedEventArgs e)
         {
@@ -203,12 +229,8 @@ namespace Croquis_.NET_Framework_
 
             HIdeThumbnail();
 
-            comboBox.Items.Add("First In First Out");
-            comboBox.Items.Add("Last In First Out");
-            comboBox.Items.Add("Ascending");
-            comboBox.Items.Add("Descending");
-            comboBox.Items.Add("Random");
             comboBox.SelectedIndex = 0;
+
             if (SystemParameters.PrimaryScreenWidth > SystemParameters.PrimaryScreenHeight)
                 maxWidth = (int)SystemParameters.PrimaryScreenWidth;
             else
@@ -252,7 +274,8 @@ namespace Croquis_.NET_Framework_
                 }
 
                 await Set_List(fileNames);
-                StartSlideshow();
+                if (!IsRun)
+                    StartSlideshow();
             }
         }
 
@@ -943,7 +966,9 @@ namespace Croquis_.NET_Framework_
 
         private async void mainwindow_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            //if (!reset_flag || wait_time) return;
+            if (e.LeftButton != MouseButtonState.Pressed)
+                return;
+
 
             var dialog = new OpenFileDialog();
 
@@ -956,16 +981,22 @@ namespace Croquis_.NET_Framework_
             if (dialog.ShowDialog() == true)
             {
                 await Set_List(dialog.FileNames);
-                StartSlideshow();
+                if (!IsRun)
+                    StartSlideshow();
             }
         }
 
         private void FullScreen_Click(object sender, RoutedEventArgs e)
         {
-            if (WindowState == WindowState.Normal)
+            if (WindowState != WindowState.Maximized)
+            {
+                WindowStyle = WindowStyle.None;
+                WindowState = WindowState.Maximized;
+            } else if (WindowState == WindowState.Maximized && WindowStyle != WindowStyle.None)
             {
                 //適用する順番でタスクバーが隠れるか隠れないかが決まる
                 WindowStyle = WindowStyle.None;
+                WindowState = WindowState.Normal;
                 WindowState = WindowState.Maximized;
             }
             else
@@ -1051,6 +1082,7 @@ namespace Croquis_.NET_Framework_
                 GridSplitterColumn.MinWidth = 0;
                 GridSplitterColumn.Width = new GridLength(0, GridUnitType.Auto);
                 listview1.IsEnabled = false;
+                Panel.Visibility =  Visibility.Visible;
             }
             else
             {
@@ -1059,7 +1091,7 @@ namespace Croquis_.NET_Framework_
                 GridSplitterColumn.MinWidth = 10;
                 GridSplitterColumn.Width = new GridLength(7, GridUnitType.Auto);
                 listview1.IsEnabled = true;
-
+                Panel.Visibility = Visibility.Hidden;
             }
         }
 
@@ -1085,6 +1117,7 @@ namespace Croquis_.NET_Framework_
 
         private void comboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
+            MenuGenerateRandomNum.Visibility = Visibility.Collapsed;
             switch (comboBox.SelectedIndex)
             {
                 case 0:
@@ -1106,6 +1139,11 @@ namespace Croquis_.NET_Framework_
                 case 4:
                     cv.SortDescriptions.Clear();
                     cv.SortDescriptions.Add(new SortDescription("Guid", ListSortDirection.Ascending));
+                    MenuGenerateRandomNum.Visibility = Visibility.Visible;
+                    break;
+                default:
+                    cv.SortDescriptions.Clear();
+                    cv.SortDescriptions.Add(new SortDescription("Num", ListSortDirection.Ascending));
                     break;
             }
         }
@@ -1156,6 +1194,51 @@ namespace Croquis_.NET_Framework_
         private void MenuPreparationTime_Click(object sender, RoutedEventArgs e)
         {
             MenuPreparationTime.IsChecked = !MenuPreparationTime.IsChecked;
+        }
+
+        private void mainwindow_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (previousPoint == e.GetPosition(this))
+            {
+                // 前回と今回のカーソル位置が同じ場合は何もしない
+                return;
+            }
+            previousPoint = e.GetPosition(this);
+
+            _timer.Stop();
+            if (isHiddenCursor)
+            {
+                // カーソルが隠れている時のみ、カーソルを表示する
+                Cursor = null;
+                isHiddenCursor = false;
+            }
+            _timer.Start();
+        }
+
+        private void Panel_MouseEnter(object sender, MouseEventArgs e)
+        {
+            Panel.Background = Brushes.LightGray;
+        }
+
+        private void Panel_MouseLeave(object sender, MouseEventArgs e)
+        {
+            Panel.Background = Brushes.Transparent;
+        }
+
+        private void MenuGenerateRandomNum_Click(object sender, RoutedEventArgs e)
+        {
+            if(comboBox.SelectedIndex == 4)//random
+            foreach (var item in listImages)
+            {
+                item.Guid = Guid.NewGuid();
+            }
+            cv.SortDescriptions.Clear();
+            cv.SortDescriptions.Add(new SortDescription("Guid", ListSortDirection.Ascending));
+        }
+
+        private void ScrollIntoView_Click(object sender, RoutedEventArgs e)
+        {
+            listview1.ScrollIntoView(listview1.SelectedItem);
         }
     }
     public static class Extention
