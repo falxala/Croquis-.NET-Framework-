@@ -1,5 +1,7 @@
 # Croquis
  
+ ![説明](https://raw.githubusercontent.com/falxala/Croquis-.NET-Framework-/main/Croquis(.NET%20Framework)/Resources/manual1.jpg)
+ 
 ## Slide show application for Croquis [Croquis]
 This software has been developed to support and improve the efficiency of croquis.
 
