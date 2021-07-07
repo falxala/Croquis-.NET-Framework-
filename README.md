@@ -55,7 +55,3 @@ Press the C or S key, then the G key. If you want to resize the grid, press "[]"
 
 #### When you want to display the next image
 Press the right arrow key. The previous image is the left arrow.
-
-
-### [Note]
-When inputting images, the number of remaining images may differ from the actual number of images that can be displayed, because we do not check whether the file is an image or not. Files that cannot be loaded are skipped, so there is no problem in operation.
