@@ -11,13 +11,9 @@
         Title="Croquis Slideshow" AllowDrop="True" PreviewKeyDown="mainwindow_PreviewKeyDown" Height="400" Width="600" Loaded="mainwindow_Loaded" MinWidth="480" MinHeight="360" IsTabStop="False" PreviewMouseDoubleClick="mainwindow_PreviewMouseDoubleClick" Closing="mainwindow_Closing" MouseMove="mainwindow_MouseMove">
 
     <Window.Resources>
-        <Style  TargetType="{x:Type ContextMenu}">
-            <Setter Property="Visibility" Value="Visible" />
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding IsLockedNorthGrid}" Value="False">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                </DataTrigger>
-            </Style.Triggers>
+        <Style  TargetType="{x:Type fw:AcrylicContextMenu}">
+            <Setter Property="FontFamily" Value="Meiryo UI" />
+            <Setter Property="FontSize" Value="12" />
         </Style>
 
         <Style TargetType="ComboBoxItem">
@@ -338,9 +334,7 @@
                         <MenuItem x:Name="itemCustomInterval" Header="{Binding}" Click="itemCustomInterval_Click"/>
                     </MenuItem>
                     <Separator />
-                    <!--
-                    <MenuItem x:Name="MenuStart" Header="Start Slideshow"  InputGestureText="" Click="MenuStart_Click"/>
-                    -->
+                    <MenuItem x:Name="MenuStart" Header="{x:Static properties:Resources.MenuStartSlideshow}"  InputGestureText="" Click="MenuStart_Click"/>
                     <MenuItem Header="{x:Static properties:Resources.MenuPauseResume}" Click="Pause" InputGestureText="Space"/>
                     <MenuItem x:Name="MenuRepeat" Header="{x:Static properties:Resources.MenuRepeat}" Click="MenuRepeat_Click"/>
                     <MenuItem x:Name="MenuPreparationTime" Header="{x:Static properties:Resources.MenuPreparationTime}" Click="MenuPreparationTime_Click"/>
@@ -380,7 +374,7 @@
 
 
         <Grid Grid.Column="2" Background="White">
-            <ListView x:Name="listview1" ItemsSource="{Binding}"  ScrollViewer.HorizontalScrollBarVisibility="Disabled" BorderBrush="White" SelectionChanged="Listview_SelectionChanged" Focusable="False" Margin="0,32,0,0" SelectionMode="Single" PreviewDrop="Image_PreviewDrop" PreviewDragOver="Image_PreviewDragOver">
+            <ListView x:Name="listview1" ItemsSource="{Binding}"  ScrollViewer.HorizontalScrollBarVisibility="Disabled" BorderBrush="White" SelectionChanged="Listview_SelectionChanged" Focusable="False" Margin="0,32,0,0" PreviewDrop="Image_PreviewDrop" PreviewDragOver="Image_PreviewDragOver">
                 <ListView.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel/>

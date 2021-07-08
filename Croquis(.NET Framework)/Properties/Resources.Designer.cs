@@ -314,6 +314,15 @@ namespace Croquis_.NET_Framework_.Properties {
         }
         
         /// <summary>
+        ///   StartSlideshow に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string MenuStartSlideshow {
+            get {
+                return ResourceManager.GetString("MenuStartSlideshow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Status に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string MenuStatus {
@@ -337,6 +346,15 @@ namespace Croquis_.NET_Framework_.Properties {
         public static string ScrollIntoView {
             get {
                 return ResourceManager.GetString("ScrollIntoView", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Press SPACE to start に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Start {
+            get {
+                return ResourceManager.GetString("Start", resourceCulture);
             }
         }
     }

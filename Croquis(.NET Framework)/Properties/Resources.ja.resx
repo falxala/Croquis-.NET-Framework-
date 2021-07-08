@@ -198,6 +198,9 @@
   <data name="MenuReset" xml:space="preserve">
     <value>リセット</value>
   </data>
+  <data name="MenuStartSlideshow" xml:space="preserve">
+    <value>スライドショーを開始</value>
+  </data>
   <data name="MenuStatus" xml:space="preserve">
     <value>ステータス情報</value>
   </data>

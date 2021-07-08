@@ -274,8 +274,6 @@ namespace Croquis_.NET_Framework_
                 }
 
                 await Set_List(fileNames);
-                if (!IsRun)
-                    StartSlideshow();
             }
         }
 
@@ -317,6 +315,7 @@ namespace Croquis_.NET_Framework_
             {
                 listImages.RemoveAt(removeIndex[index]);
             }
+            vm.Message = Properties.Resources.Start;
         }
 
         private BitmapSource ResizeImage(string uri,int pixel,bool thumbnail_flag)
@@ -499,41 +498,45 @@ namespace Croquis_.NET_Framework_
         WriteableBitmap m_processedBitmap = null;
         private bool SetImage(string image_name)
         {
-            try
-            {
-                image_.Opacity = 1;
-                CurrentImage = image_name;
-
-                m_processedBitmap = new WriteableBitmap(ResizeImage(CurrentImage, 1, false));
-
-                if (m_processedBitmap == null)
-                    throw new Exception();
-
-                if (grayscale_flag)
+            for (int retryCount = 0; retryCount <= 3; retryCount++)
+                try
                 {
-                    image_.Source = ToGrayscale(m_processedBitmap);
-                }
-                else
-                {
-                    image_.Source = m_processedBitmap;
-                }
-                m_processedBitmap.Freeze();
-                m_processedBitmap = null;
-                return true;
+                    image_.Opacity = 1;
+                    CurrentImage = image_name;
 
-            }
-            catch (OutOfMemoryException ex)
-            {
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-                GC.Collect();
-                return SetImage(image_name);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return false;
-            }
+                    //高解像度の読み込みに失敗したら低解像度（ウィンドウサイズ以下）にリサイズする
+                    if (retryCount == 0)
+                        m_processedBitmap = new WriteableBitmap(ResizeImage(CurrentImage, 1, false));
+                    else
+                        m_processedBitmap = new WriteableBitmap(ResizeImage(CurrentImage, maxWidth / retryCount, true));
+
+                    if (m_processedBitmap == null)
+                        throw new Exception();
+
+                    if (grayscale_flag)
+                    {
+                        image_.Source = ToGrayscale(m_processedBitmap);
+                    }
+                    else
+                    {
+                        image_.Source = m_processedBitmap;
+                    }
+                    m_processedBitmap.Freeze();
+                    m_processedBitmap = null;
+                    return true;
+
+                }
+                catch (OutOfMemoryException ex)
+                {
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    GC.Collect();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            return false;
 
         }
 
@@ -595,6 +598,20 @@ namespace Croquis_.NET_Framework_
         {
             switch (e.Key)
             {
+                case Key.Delete:
+                    // ListViewで選択されたアイテムを、別のコレクションにコピーする。
+                    Collection<ListImage> selected = new Collection<ListImage>();
+                    foreach (ListImage i in listview1.SelectedItems)
+                    {
+                        selected.Add(i);
+                    }
+                    // 元のコレクションから、選択されたアイテムと同じアイテムを削除する。
+                    foreach (ListImage item in selected)
+                    {
+                        listImages.Remove(item);
+                    }
+                    break;
+
                 case Key.Enter:
                     FullScreen_Click(null, null);
                     break;
@@ -607,6 +624,8 @@ namespace Croquis_.NET_Framework_
                     break;
 
                 case Key.Space:
+                    if (!IsRun)
+                        StartSlideshow();
                     Pause(null, null);
                     break;
 
@@ -981,8 +1000,6 @@ namespace Croquis_.NET_Framework_
             if (dialog.ShowDialog() == true)
             {
                 await Set_List(dialog.FileNames);
-                if (!IsRun)
-                    StartSlideshow();
             }
         }
 
@@ -1036,6 +1053,8 @@ namespace Croquis_.NET_Framework_
 
         private void Listview_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
+            if (listview1.SelectedItems.Count > 1)
+                return;
             try
             {
                 sw.Reset();
@@ -1107,13 +1126,10 @@ namespace Croquis_.NET_Framework_
 
         private void MenuStart_Click(object sender, RoutedEventArgs e)
         {
-            List<string> list = new List<string>();
-            foreach (ListImage name in listImages)
-            {
-                list.Add(name.Name);
-            }
-            StartSlideshow();
+            if (!IsRun)
+                StartSlideshow();
         }
+
 
         private void comboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {

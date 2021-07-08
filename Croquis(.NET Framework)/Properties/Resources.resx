@@ -202,6 +202,9 @@
   <data name="MenuReset" xml:space="preserve">
     <value>Reset</value>
   </data>
+  <data name="MenuStartSlideshow" xml:space="preserve">
+    <value>StartSlideshow</value>
+  </data>
   <data name="MenuStatus" xml:space="preserve">
     <value>Status</value>
   </data>
@@ -210,5 +213,8 @@
   </data>
   <data name="ScrollIntoView" xml:space="preserve">
     <value>ScrollIntoView</value>
+  </data>
+  <data name="Start" xml:space="preserve">
+    <value>Press SPACE to start</value>
   </data>
 </root>
