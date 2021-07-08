@@ -82,7 +82,7 @@ Windows10 (バージョン1803以上)
   - シークバーを0に戻す  
 <br>
 
-### ショートカットキー操作例
+### 操作例
 - 『表示時間3分，リピート表示したい時』
   - 右クリックメニューから"リピート"をクリック．同様に"表示間隔"にカーソルを合わせて目的の時間をクリック．
 
@@ -194,7 +194,7 @@ The following shortcut keys are available
   - Reset the seek bar to 0
 <BR>
 
-### Shortcut Key Operation Example
+### Operation Example
 - When you want to repeat the display time of 3 minutes.
   - Click "Repeat" from the right-click menu. Click "Repeat" from the right-click menu. Similarly, move the cursor to "Display Interval" and click the desired time.
 
