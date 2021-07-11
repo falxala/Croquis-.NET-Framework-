@@ -1,0 +1,23 @@
+﻿<Window x:Class="Croquis_.NET_Framework_.AppSetting"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Croquis_.NET_Framework_"
+        mc:Ignorable="d"
+        xmlns:properties="clr-namespace:Croquis_.NET_Framework_.Properties"
+        Title="AppSetting" Height="360" Width="360" MinWidth="360" Loaded="Window_Loaded">
+    <Grid>
+        <ComboBox x:Name="ComboQuality" Margin="0,13,10,0" VerticalAlignment="Top" FontSize="14" FontFamily="Meiryo UI" HorizontalAlignment="Right" Width="100" SelectionChanged="ComboQuality_SelectionChanged" ToolTip="{x:Static properties:Resources.TooltipQuality}">
+            <ComboBoxItem Content="{x:Static properties:Resources.MenuDisable}"/>
+            <ComboBoxItem Content="{x:Static properties:Resources.MenuEnable}"/>
+        </ComboBox>
+        <TextBlock HorizontalAlignment="Left" Margin="10,19,0,0" TextWrapping="Wrap" Text="{x:Static properties:Resources.UnificationOfDisplayQuality}" VerticalAlignment="Top" FontFamily="Meiryo UI" FontSize="14"/>
+        <ComboBox x:Name="ComboResolution" Margin="0,42,10,0" VerticalAlignment="Top" FontSize="14" FontFamily="Meiryo UI" HorizontalAlignment="Right" Width="100" SelectionChanged="ComboResolution_SelectionChanged" ToolTip="{x:Static properties:Resources.TooltipResolution}" >
+        </ComboBox>
+        <TextBlock HorizontalAlignment="Left" Margin="38,48,0,0" TextWrapping="Wrap" Text="{x:Static properties:Resources.UnifiedResolution}" VerticalAlignment="Top" FontFamily="Meiryo UI" FontSize="14"/>
+        <Rectangle Fill="Black" HorizontalAlignment="Left" Height="10" Margin="18,53,0,0" VerticalAlignment="Top" Width="10"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,78,0,0" TextWrapping="Wrap" Text="{x:Static properties:Resources.PreparationTime}" VerticalAlignment="Top" FontFamily="Meiryo UI" FontSize="14"/>
+        <ComboBox x:Name="ComboPreparationTime" Margin="0,72,10,0" VerticalAlignment="Top" FontSize="14" FontFamily="Meiryo UI" HorizontalAlignment="Right" Width="100" ToolTip="{x:Static properties:Resources.TooltipPreparationTime}" SelectionChanged="ComboPreparationTime_SelectionChanged" />
+    </Grid>
+</Window>

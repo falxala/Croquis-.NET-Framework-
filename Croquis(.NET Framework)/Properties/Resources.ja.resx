@@ -162,6 +162,12 @@
   <data name="MenuBlack" xml:space="preserve">
     <value>黒</value>
   </data>
+  <data name="MenuDisable" xml:space="preserve">
+    <value>無効</value>
+  </data>
+  <data name="MenuEnable" xml:space="preserve">
+    <value>有効</value>
+  </data>
   <data name="MenuFullScreen" xml:space="preserve">
     <value>フルスクリーン表示</value>
   </data>
@@ -182,6 +188,9 @@
   </data>
   <data name="MenuPauseResume" xml:space="preserve">
     <value>再生/一時停止</value>
+  </data>
+  <data name="MenuPreferences" xml:space="preserve">
+    <value>環境設定</value>
   </data>
   <data name="MenuPreparationTime" xml:space="preserve">
     <value>準備時間</value>
@@ -207,7 +216,28 @@
   <data name="MenuWhite" xml:space="preserve">
     <value>白</value>
   </data>
+  <data name="OutOfMemoryException" xml:space="preserve">
+    <value>アプリケーションで利用できるメモリが不足しているためリセットします</value>
+  </data>
+  <data name="PreparationTime" xml:space="preserve">
+    <value>準備時間</value>
+  </data>
   <data name="ScrollIntoView" xml:space="preserve">
     <value>選択アイテムまでスクロール</value>
+  </data>
+  <data name="TooltipPreparationTime" xml:space="preserve">
+    <value>準備時間を設定します（秒）</value>
+  </data>
+  <data name="TooltipQuality" xml:space="preserve">
+    <value>解像度を固定して読み込むことで高解像度画像を読み込む時の負荷が小さくなります</value>
+  </data>
+  <data name="TooltipResolution" xml:space="preserve">
+    <value>デコード解像度を選択します</value>
+  </data>
+  <data name="UnificationOfDisplayQuality" xml:space="preserve">
+    <value>表示品質統一化</value>
+  </data>
+  <data name="UnifiedResolution" xml:space="preserve">
+    <value>統一解像度</value>
   </data>
 </root>

@@ -206,6 +206,24 @@ namespace Croquis_.NET_Framework_.Properties {
         }
         
         /// <summary>
+        ///   Disable に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string MenuDisable {
+            get {
+                return ResourceManager.GetString("MenuDisable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Enable に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string MenuEnable {
+            get {
+                return ResourceManager.GetString("MenuEnable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   FullScreen に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string MenuFullScreen {
@@ -265,6 +283,15 @@ namespace Croquis_.NET_Framework_.Properties {
         public static string MenuPauseResume {
             get {
                 return ResourceManager.GetString("MenuPauseResume", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Preferences に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string MenuPreferences {
+            get {
+                return ResourceManager.GetString("MenuPreferences", resourceCulture);
             }
         }
         
@@ -341,6 +368,24 @@ namespace Croquis_.NET_Framework_.Properties {
         }
         
         /// <summary>
+        ///   Reset because there is insufficient memory available for the application に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string OutOfMemoryException {
+            get {
+                return ResourceManager.GetString("OutOfMemoryException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   PreparationTime に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string PreparationTime {
+            get {
+                return ResourceManager.GetString("PreparationTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   ScrollIntoView に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string ScrollIntoView {
@@ -355,6 +400,51 @@ namespace Croquis_.NET_Framework_.Properties {
         public static string Start {
             get {
                 return ResourceManager.GetString("Start", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Set the preparation time (second) に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string TooltipPreparationTime {
+            get {
+                return ResourceManager.GetString("TooltipPreparationTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Loading with a fixed resolution reduces the load when loading high-resolution images に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string TooltipQuality {
+            get {
+                return ResourceManager.GetString("TooltipQuality", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Select the decoding resolution に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string TooltipResolution {
+            get {
+                return ResourceManager.GetString("TooltipResolution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Unification of display quality に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string UnificationOfDisplayQuality {
+            get {
+                return ResourceManager.GetString("UnificationOfDisplayQuality", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Unified Resolution に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string UnifiedResolution {
+            get {
+                return ResourceManager.GetString("UnifiedResolution", resourceCulture);
             }
         }
     }

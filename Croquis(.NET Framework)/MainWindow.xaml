@@ -351,6 +351,7 @@
                     </MenuItem>
                     <Separator></Separator>
                     <MenuItem x:Name="reset" Header="{x:Static properties:Resources.MenuReset}" Click="reset_Click"/>
+                    <MenuItem x:Name="preferences" Header="{x:Static properties:Resources.MenuPreferences}" Click="preferences_Click"/>
                     <MenuItem x:Name="quit" Header="{x:Static properties:Resources.MenuQuit}" Click="quit_Click"/>
                 </fw:AcrylicContextMenu>
             </Grid.ContextMenu>

@@ -241,6 +241,8 @@ namespace Croquis_.NET_Framework_
             vm.InfoTextSize = appSettings.InfoTextSize;
             vm.ProgressColor = appSettings.ProgressBarColor;
 
+            MenuPreparationTime.IsChecked = appSettings.PreparationTimeIsEnabled;
+
             itemCustomInterval.DataContext = "Custom : " + new TimeSpan(0, 0, appSettings.CustomInterval).ToString(@"mm\:ss");
         }
 
@@ -282,7 +284,7 @@ namespace Croquis_.NET_Framework_
             ParallelOptions options = new ParallelOptions();
             options.MaxDegreeOfParallelism = 8;
             object lockobj = new object();
-            
+
             int offset = 0;
             if (listImages.Count != 0)
                 offset = listImages.Count;
@@ -295,15 +297,20 @@ namespace Croquis_.NET_Framework_
 
                 foreach (var item in fileNames)
                 {
-                    listImages.Add(new ListImage { Name = null, Image = ResizeImage(null, 0, true), Guid = Guid.NewGuid(), Num = 0});
+                    listImages.Add(new ListImage { Name = null, Image = ResizeImage(null, 0, true), Guid = Guid.NewGuid(), Num = 0 });
                 }
 
                 Parallel.For(0, fileNames.Length, options, i =>
                 {
                     int j = i + offset;
-                    ListImage image = new ListImage { 
-                        Name = fileNames[i], Image = ResizeImage(fileNames[i], appSettings.ThumbnailSize, true), 
-                        Guid = Guid.NewGuid(), Num = j , ThumbnailGridSize = appSettings.ThumbnailSize };
+                    ListImage image = new ListImage
+                    {
+                        Name = fileNames[i],
+                        Image = ResizeImage(fileNames[i], appSettings.ThumbnailSize, true),
+                        Guid = Guid.NewGuid(),
+                        Num = j,
+                        ThumbnailGridSize = appSettings.ThumbnailSize
+                    };
                     if (image.Image == dummy)
                         removeIndex.Add(j);
                     else
@@ -311,14 +318,17 @@ namespace Croquis_.NET_Framework_
                 });
             });
             removeIndex.Sort();//Parallelでバラバラなので並び替え
-            for (int index = removeIndex.Count -1; index >= 0; index--)
+            for (int index = removeIndex.Count - 1; index >= 0; index--)
             {
                 listImages.RemoveAt(removeIndex[index]);
             }
             vm.Message = Properties.Resources.Start;
+            if (listImages.Count == 0)
+                Reset();
+
         }
 
-        private BitmapSource ResizeImage(string uri,int pixel,bool thumbnail_flag)
+        private BitmapSource ResizeImage(string uri, int pixel, bool thumbnail_flag)
         {
             if (uri == null)
                 return dummy;
@@ -332,29 +342,29 @@ namespace Croquis_.NET_Framework_
                     thumbnail.CreateOptions = BitmapCreateOptions.None;
                     if (thumbnail_flag)
                         thumbnail.DecodePixelWidth = pixel;
-                    
+
                     var metaData = BitmapFrame.Create(stream).Metadata as BitmapMetadata;
                     stream.Position = 0;
                     string query = "/app1/ifd/exif:{uint=274}";
-                    if (metaData.ContainsQuery(query))
-                    {
-
-                        switch (Convert.ToUInt32(metaData.GetQuery(query)))
+                    if (metaData != null)
+                        if (metaData.ContainsQuery(query))
                         {
-                            case 3:
-                                thumbnail.Rotation = Rotation.Rotate180;
-                                break;
-                            case 6:
-                                thumbnail.Rotation = Rotation.Rotate90;
-                                break;
-                            case 8:
-                                thumbnail.Rotation = Rotation.Rotate270;
-                                break;
-                            default:
-                                thumbnail.Rotation = Rotation.Rotate0;
-                                break;
+                            switch (Convert.ToUInt32(metaData.GetQuery(query)))
+                            {
+                                case 3:
+                                    thumbnail.Rotation = Rotation.Rotate180;
+                                    break;
+                                case 6:
+                                    thumbnail.Rotation = Rotation.Rotate90;
+                                    break;
+                                case 8:
+                                    thumbnail.Rotation = Rotation.Rotate270;
+                                    break;
+                                default:
+                                    thumbnail.Rotation = Rotation.Rotate0;
+                                    break;
+                            }
                         }
-                    }
                     thumbnail.StreamSource = stream;
                     thumbnail.EndInit();
                     thumbnail.Freeze();
@@ -364,34 +374,17 @@ namespace Croquis_.NET_Framework_
             }
             catch
             {
-                try
-                {
-                    using (FileStream stream = File.OpenRead(uri))
-                    {
-                        BitmapImage thumbnail = new BitmapImage();
-                        thumbnail.BeginInit();
-                        thumbnail.CacheOption = BitmapCacheOption.OnLoad;
-                        thumbnail.CreateOptions = BitmapCreateOptions.None;
-                        if (thumbnail_flag)
-                            thumbnail.DecodePixelWidth = pixel;
-                        thumbnail.StreamSource = stream;
-                        thumbnail.EndInit();
-                        thumbnail.Freeze();
-                        stream.Close();
-                        return thumbnail;
-                    }
-                }
-                catch
-                {
-                    return dummy;
-                }
+                return dummy;
             }
-            
+
         }
 
         bool IsRun = false;
         private async void StartSlideshow()
         {
+            image_.Opacity = 0.5;
+            if (listview1.Items.Count == 0)
+                return;
             progressbar.Visibility = Visibility.Visible;
 
             IsRun = true;
@@ -404,7 +397,7 @@ namespace Croquis_.NET_Framework_
             }
             pause_flag = false;
             reset_flag = false;
-
+            image_.Opacity = 1;
             await Slideshow();
         }
 
@@ -449,11 +442,11 @@ namespace Croquis_.NET_Framework_
 
                     listview1.SelectedIndex++;
 
+                    //カウントダウン
                     int Pretime = appSettings.PreparationTime * 5;
                     string oldCurrent = CurrentImage;
                     text_pop(true);
                     image_.Opacity = 0.5;
-
                     while (MenuPreparationTime.IsChecked &&
                         Pretime > 0 && reset_flag == false && 
                         CurrentImage == oldCurrent)
@@ -501,26 +494,24 @@ namespace Croquis_.NET_Framework_
             for (int retryCount = 0; retryCount <= 3; retryCount++)
                 try
                 {
-                    image_.Opacity = 1;
+                    m_processedBitmap = null;
                     CurrentImage = image_name;
-
                     //高解像度の読み込みに失敗したら低解像度（ウィンドウサイズ以下）にリサイズする
                     if (retryCount == 0)
-                        m_processedBitmap = new WriteableBitmap(ResizeImage(CurrentImage, 1, false));
+                        m_processedBitmap = new WriteableBitmap(new FormatConvertedBitmap
+                            (ResizeImage(CurrentImage, appSettings.UnifiedResolution, appSettings.UnificationOfDisplayQuality), PixelFormats.Bgra32, null, 0));
                     else
-                        m_processedBitmap = new WriteableBitmap(ResizeImage(CurrentImage, maxWidth / retryCount, true));
+                        m_processedBitmap = new WriteableBitmap(new FormatConvertedBitmap
+                            (ResizeImage(CurrentImage, maxWidth / retryCount, true), PixelFormats.Bgra32, null, 0));
 
                     if (m_processedBitmap == null)
                         throw new Exception();
 
                     if (grayscale_flag)
-                    {
-                        image_.Source = ToGrayscale(m_processedBitmap);
-                    }
-                    else
-                    {
-                        image_.Source = m_processedBitmap;
-                    }
+                        ToGrayscale();
+
+                    image_.Source = m_processedBitmap;
+                    image_.Source.Freeze();
                     m_processedBitmap.Freeze();
                     m_processedBitmap = null;
                     return true;
@@ -538,6 +529,82 @@ namespace Croquis_.NET_Framework_
                 }
             return false;
 
+        }
+
+
+        //参考　http://www.pronowa.com/room/wpf_imaging003.html
+        private void ToGrayscale()
+        {
+            PixelFormat fmt = m_processedBitmap.Format;
+
+            if (m_processedBitmap == null || fmt != PixelFormats.Bgra32)
+            {
+                Console.WriteLine(fmt);
+                return;
+            }
+
+            int channel = 4;
+
+            int width = m_processedBitmap.PixelWidth;
+            int height = m_processedBitmap.PixelHeight;
+            int stride = width * channel;
+            int res = stride - channel * width;
+            m_processedBitmap.Lock();
+            unsafe
+            {
+                /*
+                byte* pBackBuffer =(byte*)(void*)m_processedBitmap.BackBuffer;
+                for (int y = 0; y < height; y++)
+                {
+                    for (int x = 0; x < width; x++)
+                    {
+                        byte b = pBackBuffer[0];
+                        byte g = pBackBuffer[1];
+                        byte r = pBackBuffer[2];
+
+                        byte gray = (byte)((313430 * r + 615105 * g + 120041 * b) >> 20);
+
+                        pBackBuffer[0] = gray;
+                        pBackBuffer[1] = gray;
+                        pBackBuffer[2] = gray;
+
+                        pBackBuffer += channel;
+                    }
+                    pBackBuffer += res;
+                }
+                */
+                //並列処理
+                var ptr = (byte*)m_processedBitmap.BackBuffer;
+                Parallel.For(0, height, y =>
+                {
+                    byte* pLine = ptr + y * stride; 
+                    for (int x = 0; x < width; x++)
+                    {
+                        // 輝度値の取得
+                        byte r = pLine[2];
+                        byte g = pLine[1];
+                        byte b = pLine[0];
+
+                        int gray = (int)(0.29811 * r + 0.58661 * g + 0.11448 * b);
+                        // 輝度値の設定
+                        pLine[2] = (byte)gray;
+                        pLine[1] = (byte)gray;
+                        pLine[0] = (byte)gray;
+
+                        // 次の画素へ
+                        pLine += channel;
+                    }
+                });
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+            }
+
+
+            m_processedBitmap.AddDirtyRect(
+                new Int32Rect(0, 0, width, height));
+            m_processedBitmap.Unlock();
+            m_processedBitmap.Freeze();
         }
 
         private async Task showImage(string image_name)
@@ -904,61 +971,6 @@ namespace Croquis_.NET_Framework_
         }
 
 
-        
-        //参考　http://www.pronowa.com/room/wpf_imaging003.html
-        private WriteableBitmap ToGrayscale(WriteableBitmap m_processedBitmap)
-        {
-            if (m_processedBitmap == null)
-            {
-                return null;
-            }
-
-            int channel = 4;
-
-            int width = m_processedBitmap.PixelWidth;
-            int height = m_processedBitmap.PixelHeight;
-            int stride = width * channel;
-            int res = stride - channel * width;
-            m_processedBitmap.Lock();
-            unsafe
-            {
-                byte* pBackBuffer =
-                    (byte*)(void*)m_processedBitmap.BackBuffer;
-                for (int y = 0; y < height; y++)
-                {
-                    for (int x = 0; x < width; x++)
-                    {
-                        byte b = pBackBuffer[0];
-                        byte g = pBackBuffer[1];
-                        byte r = pBackBuffer[2];
-
-                        int gray =
-                            (int)(0.29811 * r + 0.58661 * g + 0.11448 * b);
-                        if (gray > 255)
-                        {
-                            gray = 255;
-                        }
-                        if (gray < 0)
-                        {
-                            gray = 0;
-                        }
-
-                        pBackBuffer[0] = (byte)gray;
-                        pBackBuffer[1] = (byte)gray;
-                        pBackBuffer[2] = (byte)gray;
-
-                        pBackBuffer += channel;
-                    }
-                    pBackBuffer += res;
-                }
-            }
-            m_processedBitmap.AddDirtyRect(
-                new Int32Rect(0, 0, width, height));
-            m_processedBitmap.Unlock();
-            m_processedBitmap.Freeze();
-            return m_processedBitmap;
-        }
-
         private void GrayScale(object sender, RoutedEventArgs e)
         {
             try
@@ -1065,6 +1077,7 @@ namespace Croquis_.NET_Framework_
                     {
                         text_pop(false);
                         SetImage(selected_item.Name);
+                        image_.Opacity = 1;
                     }
                 }
                 if (listview1.SelectedIndex >= 0)
@@ -1210,6 +1223,7 @@ namespace Croquis_.NET_Framework_
         private void MenuPreparationTime_Click(object sender, RoutedEventArgs e)
         {
             MenuPreparationTime.IsChecked = !MenuPreparationTime.IsChecked;
+            appSettings.PreparationTimeIsEnabled = MenuPreparationTime.IsChecked;
         }
 
         private void mainwindow_MouseMove(object sender, MouseEventArgs e)
@@ -1255,6 +1269,15 @@ namespace Croquis_.NET_Framework_
         private void ScrollIntoView_Click(object sender, RoutedEventArgs e)
         {
             listview1.ScrollIntoView(listview1.SelectedItem);
+        }
+
+        private void preferences_Click(object sender, RoutedEventArgs e)
+        {
+            AppSetting AS = new AppSetting(appSettings);
+            AS.Owner = GetWindow(this);
+            AS.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            AS.ShowDialog();
+            AS.Close();
         }
     }
     public static class Extention

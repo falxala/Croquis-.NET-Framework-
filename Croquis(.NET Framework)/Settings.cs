@@ -15,11 +15,28 @@ namespace Croquis_.NET_Framework_
         private int _infoTextSize;
         private int _customInterval;
         private int _preparationTime;
+        private bool _preparationTimeIsEnabled;
+        private bool _unificationOfDisplayQuality;
+        private int _unifiedResolution;
 
+        public bool UnificationOfDisplayQuality
+        {
+            get { return _unificationOfDisplayQuality; }
+            set { _unificationOfDisplayQuality = value; }
+        }
+        public int UnifiedResolution
+        {
+            get { return _unifiedResolution; }
+            set { _unifiedResolution = value; }
+        }
         public int ProgressBarHeight
         {
             get { return _progressbarHeight; }
-            set { _progressbarHeight = value; }
+            set
+            {
+                if (value <= 2560)
+                    _progressbarHeight = value;
+            }
         }
         public string ProgressBarColor
         {
@@ -29,7 +46,11 @@ namespace Croquis_.NET_Framework_
         public int ThumbnailSize
         {
             get { return _thumbnailSize; }
-            set { _thumbnailSize = value; }
+            set
+            {
+                if (value <= 512)
+                    _thumbnailSize = value;
+            }
         }
         public int InfoTextSize
         {
@@ -40,6 +61,11 @@ namespace Croquis_.NET_Framework_
         {
             get { return _customInterval; }
             set { _customInterval = value; }
+        }
+        public bool PreparationTimeIsEnabled
+        {
+            get { return _preparationTimeIsEnabled; }
+            set { _preparationTimeIsEnabled = value; }
         }
         public int PreparationTime
         {
@@ -53,8 +79,11 @@ namespace Croquis_.NET_Framework_
             _thumbnailSize = 127;
             _infoTextSize = 14;
             _progressbarColor = "#FFFF3030";
-            _customInterval = 1;
+            _customInterval = 5;
             _preparationTime = 3;
+            _unificationOfDisplayQuality = true;
+            _unifiedResolution = 1920;
+            _preparationTimeIsEnabled = true;
         }
     }
 

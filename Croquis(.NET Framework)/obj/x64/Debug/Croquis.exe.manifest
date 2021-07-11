@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <asmv1:assembly xsi:schemaLocation="urn:schemas-microsoft-com:asm.v1 assembly.adaptive.xsd" manifestVersion="1.0" xmlns:asmv1="urn:schemas-microsoft-com:asm.v1" xmlns="urn:schemas-microsoft-com:asm.v2" xmlns:asmv2="urn:schemas-microsoft-com:asm.v2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:co.v1="urn:schemas-microsoft-com:clickonce.v1" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" xmlns:co.v2="urn:schemas-microsoft-com:clickonce.v2">
-  <asmv1:assemblyIdentity name="Croquis(.NET Framework).exe" version="1.0.0.1" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="amd64" type="win32" />
+  <asmv1:assemblyIdentity name="Croquis.exe" version="1.0.0.1" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="amd64" type="win32" />
   <description asmv2:iconFile="Resources\icon255x255.ico" xmlns="urn:schemas-microsoft-com:asm.v1" />
   <application />
   <entryPoint>
-    <assemblyIdentity name="Croquis(.NET Framework)" version="1.1.2.0" language="neutral" processorArchitecture="amd64" />
-    <commandLine file="Croquis(.NET Framework).exe" parameters="" />
+    <assemblyIdentity name="Croquis" version="1.2.6.0" language="neutral" processorArchitecture="amd64" />
+    <commandLine file="Croquis.exe" parameters="" />
   </entryPoint>
   <trustInfo>
     <security>
@@ -43,14 +43,26 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Croquis(.NET Framework).exe" size="2333672">
-      <assemblyIdentity name="Croquis(.NET Framework)" version="1.1.2.0" language="neutral" processorArchitecture="amd64" />
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Croquis.exe" size="1396200">
+      <assemblyIdentity name="Croquis" version="1.2.6.0" language="neutral" processorArchitecture="amd64" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>ObTCdpwDJXKRJk5GltSkIVgjUpoLtLrCNCIxAeuZjOg=</dsig:DigestValue>
+        <dsig:DigestValue>mdDZVSUGI8lPTXCgGuPPpWAqwVib4wvanMpoPv2XOyc=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="ja\Croquis.resources.dll" size="4608">
+      <assemblyIdentity name="Croquis.resources" version="1.2.6.0" language="ja" processorArchitecture="amd64" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>vWfEiIwTNQ5Bb/LOAct53yY0Fy5EcEumx0tq+nkHgOM=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -75,42 +87,6 @@
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
         <dsig:DigestValue>zGKqxmmlJL9PTsgLZJOxqSCxprmZzzlke5oej26Vm04=</dsig:DigestValue>
-      </hash>
-    </dependentAssembly>
-  </dependency>
-  <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OpenCvSharp.dll" size="915968">
-      <assemblyIdentity name="OpenCvSharp" version="1.0.0.0" publicKeyToken="6ADAD1E807FEA099" language="neutral" processorArchitecture="msil" />
-      <hash>
-        <dsig:Transforms>
-          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
-        </dsig:Transforms>
-        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>QdkLj2C4Vd2yM9D9rt6PAdkxlBda/T/X3IJbUhGeBAI=</dsig:DigestValue>
-      </hash>
-    </dependentAssembly>
-  </dependency>
-  <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OpenCvSharp.Extensions.dll" size="20480">
-      <assemblyIdentity name="OpenCvSharp.Extensions" version="1.0.0.0" publicKeyToken="6ADAD1E807FEA099" language="neutral" processorArchitecture="msil" />
-      <hash>
-        <dsig:Transforms>
-          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
-        </dsig:Transforms>
-        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>196f9AzEOEQyfJiO7tVZHPF5UdHPIhC/+iPbKzqMm6M=</dsig:DigestValue>
-      </hash>
-    </dependentAssembly>
-  </dependency>
-  <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OpenCvSharp.WpfExtensions.dll" size="13824">
-      <assemblyIdentity name="OpenCvSharp.WpfExtensions" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
-      <hash>
-        <dsig:Transforms>
-          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
-        </dsig:Transforms>
-        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>zTmIstGG31rAx4ksjaoHiPceqeLWT2/+XFqavSsfHcY=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -210,7 +186,7 @@
       </hash>
     </dependentAssembly>
   </dependency>
-  <file name="Croquis(.NET Framework).exe.config" size="553">
+  <file name="Croquis.exe.config" size="553">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />

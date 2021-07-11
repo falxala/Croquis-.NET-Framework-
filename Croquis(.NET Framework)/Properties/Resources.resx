@@ -166,6 +166,12 @@
   <data name="MenuBlack" xml:space="preserve">
     <value>Black</value>
   </data>
+  <data name="MenuDisable" xml:space="preserve">
+    <value>Disable</value>
+  </data>
+  <data name="MenuEnable" xml:space="preserve">
+    <value>Enable</value>
+  </data>
   <data name="MenuFullScreen" xml:space="preserve">
     <value>FullScreen</value>
   </data>
@@ -186,6 +192,9 @@
   </data>
   <data name="MenuPauseResume" xml:space="preserve">
     <value>Pause/Resume</value>
+  </data>
+  <data name="MenuPreferences" xml:space="preserve">
+    <value>Preferences</value>
   </data>
   <data name="MenuPreparationTime" xml:space="preserve">
     <value>PreparationTime</value>
@@ -211,10 +220,31 @@
   <data name="MenuWhite" xml:space="preserve">
     <value>White</value>
   </data>
+  <data name="OutOfMemoryException" xml:space="preserve">
+    <value>Reset because there is insufficient memory available for the application</value>
+  </data>
+  <data name="PreparationTime" xml:space="preserve">
+    <value>PreparationTime</value>
+  </data>
   <data name="ScrollIntoView" xml:space="preserve">
     <value>ScrollIntoView</value>
   </data>
   <data name="Start" xml:space="preserve">
     <value>Press SPACE to start</value>
+  </data>
+  <data name="TooltipPreparationTime" xml:space="preserve">
+    <value>Set the preparation time (second)</value>
+  </data>
+  <data name="TooltipQuality" xml:space="preserve">
+    <value>Loading with a fixed resolution reduces the load when loading high-resolution images</value>
+  </data>
+  <data name="TooltipResolution" xml:space="preserve">
+    <value>Select the decoding resolution</value>
+  </data>
+  <data name="UnificationOfDisplayQuality" xml:space="preserve">
+    <value>Unification of display quality</value>
+  </data>
+  <data name="UnifiedResolution" xml:space="preserve">
+    <value>Unified Resolution</value>
   </data>
 </root>
