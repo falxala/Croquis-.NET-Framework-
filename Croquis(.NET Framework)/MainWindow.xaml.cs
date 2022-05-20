@@ -63,6 +63,40 @@ namespace Croquis_.NET_Framework_
             }
         }
 
+        private string info_VerticalAlignment = "";
+        public string Info_VerticalAlignment
+        {
+            get
+            {
+                return this.info_VerticalAlignment;
+            }
+            set
+            {
+                if (value != this.info_VerticalAlignment)
+                {
+                    this.info_VerticalAlignment = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
+        private string info_HorizontalAlignment = "";
+        public string Info_HorizontalAlignment
+        {
+            get
+            {
+                return this.info_HorizontalAlignment;
+            }
+            set
+            {
+                if (value != this.info_HorizontalAlignment)
+                {
+                    this.info_HorizontalAlignment = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
         private int num = 0;
         public int Num
         {
@@ -190,12 +224,16 @@ namespace Croquis_.NET_Framework_
 
             info_label.DataContext = vm;
             vm.info_Message = "--";
+            vm.Info_HorizontalAlignment = appSettings.Horizontal.ToString();
+            vm.Info_VerticalAlignment = appSettings.Vertical.ToString();
             RowDefinition.DataContext = vm;
             vm.Num = appSettings.ProgressBarHeight;
-            info_label.DataContext = vm;
             vm.InfoTextSize = appSettings.InfoTextSize;
             progressbar.DataContext = vm;
             vm.ProgressColor = appSettings.ProgressBarColor;
+
+            dockArrow.Visibility = Visibility.Hidden;
+            dockArrow0.Visibility = Visibility.Hidden;
 
             //カーソルを自動で隠すためのタイマーインスタンス
             _timer = new DispatcherTimer(DispatcherPriority.Background);
@@ -203,8 +241,11 @@ namespace Croquis_.NET_Framework_
             _timer.Tick += (e, s) => { TimerMethod(); };
             this.Closing += (e, s) => { _timer.Stop(); };
 
+            RenderOptions.SetBitmapScalingMode(image_, appSettings.BitmapScalingMode);
 
-            RenderOptions.SetBitmapScalingMode(image_, BitmapScalingMode.Fant);
+            /************/
+            Panel0.IsEnabled = false;
+            /************/
         }
 
         private void TimerMethod()
@@ -220,14 +261,17 @@ namespace Croquis_.NET_Framework_
         }
 
 
-        private void mainwindow_Loaded(object sender, RoutedEventArgs e)
+        private async void mainwindow_Loaded(object sender, RoutedEventArgs e)
         {
             //並び替え
             cv = CollectionViewSource.GetDefaultView(listImages);
             cv.SortDescriptions.Clear();
             cv.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
 
-            HIdeThumbnail();
+            menuListview.IsChecked = true;
+            //HIdeThumbnail();
+            HIdeMenu();
+            Panel.Visibility = Visibility.Hidden;
 
             comboBox.SelectedIndex = 0;
 
@@ -240,10 +284,25 @@ namespace Croquis_.NET_Framework_
             vm.Num = appSettings.ProgressBarHeight;
             vm.InfoTextSize = appSettings.InfoTextSize;
             vm.ProgressColor = appSettings.ProgressBarColor;
+            vm.Info_HorizontalAlignment = appSettings.Horizontal.ToString();
+            vm.Info_VerticalAlignment = appSettings.Vertical.ToString();
 
             MenuPreparationTime.IsChecked = appSettings.PreparationTimeIsEnabled;
 
-            itemCustomInterval.DataContext = "Custom : " + new TimeSpan(0, 0, appSettings.CustomInterval).ToString(@"mm\:ss");
+            itemCustomInterval.DataContext = new TimeSpan(0, 0, appSettings.CustomInterval).ToString(@"mm\:ss");
+            Interval_time = appSettings.OldInterval;
+            vm.info_Message = "SET:" + new TimeSpan(0, 0, Interval_time).ToString(@"mm\:ss");
+            MenuInfo.IsChecked = true;
+            menuProgress.IsChecked = true;
+
+            /*******************/
+            await Set_List(appSettings.FileNames);
+            await Task.Delay(100);
+            if (appSettings.Memory)
+            {
+                listview1.SelectedIndex = appSettings.Number;
+            }
+
         }
 
 
@@ -294,7 +353,8 @@ namespace Croquis_.NET_Framework_
             vm.Message = "Loading";
             await Task.Run(() =>
             {
-
+                if (fileNames == null)
+                    return;
                 foreach (var item in fileNames)
                 {
                     listImages.Add(new ListImage { Name = null, Image = ResizeImage(null, 0, true), Guid = Guid.NewGuid(), Num = 0 });
@@ -346,6 +406,7 @@ namespace Croquis_.NET_Framework_
                     var metaData = BitmapFrame.Create(stream).Metadata as BitmapMetadata;
                     stream.Position = 0;
                     string query = "/app1/ifd/exif:{uint=274}";
+
                     if (metaData != null)
                         if (metaData.ContainsQuery(query))
                         {
@@ -372,6 +433,27 @@ namespace Croquis_.NET_Framework_
                     return thumbnail;
                 }
             }
+            catch (NotSupportedException e)
+            {
+                try
+                {
+                    using (FileStream stream = File.OpenRead(uri))
+                    {
+                        BitmapImage thumbnail = new BitmapImage();
+                        thumbnail.BeginInit();
+                        thumbnail.CacheOption = BitmapCacheOption.OnLoad;
+                        thumbnail.CreateOptions = BitmapCreateOptions.None;
+                        if (thumbnail_flag)
+                            thumbnail.DecodePixelWidth = pixel;
+                        thumbnail.StreamSource = stream;
+                        thumbnail.EndInit();
+                        thumbnail.Freeze();
+                        stream.Close();
+                        return thumbnail;
+                    }
+                }
+                catch { return dummy; }
+            }
             catch
             {
                 return dummy;
@@ -385,7 +467,16 @@ namespace Croquis_.NET_Framework_
             image_.Opacity = 0.5;
             if (listview1.Items.Count == 0)
                 return;
-            progressbar.Visibility = Visibility.Visible;
+            if (menuProgress.IsChecked)
+            {
+                progressbar.Visibility = Visibility.Visible;
+                RowDefinition.Height = new GridLength(appSettings.ProgressBarHeight);
+            }
+            else
+            {
+                progressbar.Visibility = Visibility.Hidden;
+                RowDefinition.Height = new GridLength(0);
+            }
 
             IsRun = true;
             for (int t = 3; t > 0; t--)
@@ -552,27 +643,7 @@ namespace Croquis_.NET_Framework_
             m_processedBitmap.Lock();
             unsafe
             {
-                /*
-                byte* pBackBuffer =(byte*)(void*)m_processedBitmap.BackBuffer;
-                for (int y = 0; y < height; y++)
-                {
-                    for (int x = 0; x < width; x++)
-                    {
-                        byte b = pBackBuffer[0];
-                        byte g = pBackBuffer[1];
-                        byte r = pBackBuffer[2];
 
-                        byte gray = (byte)((313430 * r + 615105 * g + 120041 * b) >> 20);
-
-                        pBackBuffer[0] = gray;
-                        pBackBuffer[1] = gray;
-                        pBackBuffer[2] = gray;
-
-                        pBackBuffer += channel;
-                    }
-                    pBackBuffer += res;
-                }
-                */
                 //並列処理
                 var ptr = (byte*)m_processedBitmap.BackBuffer;
                 Parallel.For(0, height, y =>
@@ -740,7 +811,7 @@ namespace Croquis_.NET_Framework_
                     break;
 
                 case Key.C:
-                    GrayScale(null, null);
+                    e.Handled = true;
                     break;
 
                 case Key.P:
@@ -753,6 +824,10 @@ namespace Croquis_.NET_Framework_
 
                 case Key.I:
                     info_Click(null, null);
+                    break;
+
+                case Key.F:
+                    MenuFlip_Click(null,null);
                     break;
 
                 case Key.Tab:
@@ -771,6 +846,48 @@ namespace Croquis_.NET_Framework_
                     {
                         listview1.SelectedIndex++;
                     }
+                    break;
+
+                case Key.D1:
+                    item15_Click(null,null);
+                    break;
+                case Key.D2:
+                    item30_Click(null, null);
+                    break;
+                case Key.D3:
+                    item60_Click(null, null);
+                    break;
+                case Key.D4:
+                    item90_Click(null, null);
+                    break;
+                case Key.D5:
+                    item180_Click(null, null);
+                    break;
+                case Key.D6:
+                    item300_Click(null, null);
+                    break;
+                case Key.D7:
+                    item600_Click(null, null);
+                    break;
+                case Key.D8:
+                    item900_Click(null, null);
+                    break;
+                case Key.D9:
+                    itemCustomInterval_Click(null, null);
+                    break;
+                case Key.MediaPlayPause:
+                    if (!IsRun)
+                        StartSlideshow();
+                    Pause(null, null);
+                    break;
+                case Key.MediaNextTrack:
+                    listview1.SelectedIndex++;
+                    break;
+                case Key.MediaPreviousTrack:
+                    if (listview1.SelectedIndex > 0)
+                        listview1.SelectedIndex--;
+                    break;
+                default:
                     break;
 
             }
@@ -818,63 +935,63 @@ namespace Croquis_.NET_Framework_
         {
             Interval_time = appSettings.CustomInterval;
             Update_interval = 15;
-            vm.info_Message = "set:" + new TimeSpan(0, 0, Interval_time).ToString(@"mm\:ss");
+            vm.info_Message = "SET:" + new TimeSpan(0, 0, Interval_time).ToString(@"mm\:ss");
         }
 
         private void item15_Click(object sender, RoutedEventArgs e)
         {
             Interval_time = 15;
             Update_interval = 15;
-            vm.info_Message = "set:" + new TimeSpan(0, 0, Interval_time).ToString(@"mm\:ss");
+            vm.info_Message = "SET:" + new TimeSpan(0, 0, Interval_time).ToString(@"mm\:ss");
         }
 
         private void item30_Click(object sender, RoutedEventArgs e)
         {
             Interval_time = 30;
             Update_interval = 15;
-            vm.info_Message = "set:" + new TimeSpan(0, 0, Interval_time).ToString(@"mm\:ss");
+            vm.info_Message = "SET:" + new TimeSpan(0, 0, Interval_time).ToString(@"mm\:ss");
         }
 
         private void item60_Click(object sender, RoutedEventArgs e)
         {
             Interval_time = 60;
             Update_interval = 20;
-            vm.info_Message = "set:" + new TimeSpan(0, 0, Interval_time).ToString(@"mm\:ss");
+            vm.info_Message = "SET:" + new TimeSpan(0, 0, Interval_time).ToString(@"mm\:ss");
         }
 
         private void item90_Click(object sender, RoutedEventArgs e)
         {
             Interval_time = 90;
             Update_interval = 20;
-            vm.info_Message = "set:" + new TimeSpan(0, 0, Interval_time).ToString(@"mm\:ss");
+            vm.info_Message = "SET:" + new TimeSpan(0, 0, Interval_time).ToString(@"mm\:ss");
         }
 
         private void item180_Click(object sender, RoutedEventArgs e)
         {
             Interval_time = 180;
             Update_interval = 50;
-            vm.info_Message = "set:" + new TimeSpan(0, 0, Interval_time).ToString(@"mm\:ss");
+            vm.info_Message = "SET:" + new TimeSpan(0, 0, Interval_time).ToString(@"mm\:ss");
         }
 
         private void item300_Click(object sender, RoutedEventArgs e)
         {
             Interval_time = 300;
             Update_interval = 50;
-            vm.info_Message = "set:" + new TimeSpan(0, 0, Interval_time).ToString(@"mm\:ss");
+            vm.info_Message = "SET:" + new TimeSpan(0, 0, Interval_time).ToString(@"mm\:ss");
         }
 
         private void item600_Click(object sender, RoutedEventArgs e)
         {
             Interval_time = 600;
             Update_interval = 100;
-            vm.info_Message = "set:" + new TimeSpan(0, 0, Interval_time).ToString(@"mm\:ss");
+            vm.info_Message = "SET:" + new TimeSpan(0, 0, Interval_time).ToString(@"mm\:ss");
         }
 
         private void item900_Click(object sender, RoutedEventArgs e)
         {
             Interval_time = 900;
             Update_interval = 100;
-            vm.info_Message = "set:" + new TimeSpan(0, 0, Interval_time).ToString(@"mm\:ss");
+            vm.info_Message = "SET:" + new TimeSpan(0, 0, Interval_time).ToString(@"mm\:ss");
         }
 
 
@@ -956,7 +1073,8 @@ namespace Croquis_.NET_Framework_
 
         private void Grid(object sender, RoutedEventArgs e)
         {
-            if (canvas.Visibility == Visibility.Hidden)
+            MenuGrid.IsChecked = !MenuGrid.IsChecked;
+            if (MenuGrid.IsChecked)
                 canvas.Visibility = Visibility.Visible;
             else
                 canvas.Visibility = Visibility.Hidden;
@@ -964,7 +1082,8 @@ namespace Croquis_.NET_Framework_
 
         private void info_Click(object sender, RoutedEventArgs e)
         {
-            if (info_label.Visibility == Visibility.Visible)
+            MenuInfo.IsChecked = !MenuInfo.IsChecked;
+            if (!MenuInfo.IsChecked)
                 info_label.Visibility = Visibility.Hidden;
             else
                 info_label.Visibility = Visibility.Visible;
@@ -973,12 +1092,12 @@ namespace Croquis_.NET_Framework_
 
         private void GrayScale(object sender, RoutedEventArgs e)
         {
+            MenuGrayScale.IsChecked = !MenuGrayScale.IsChecked;
+            grayscale_flag = MenuGrayScale.IsChecked;
             try
             {
                 if (reset_flag == true)
                     throw new Exception();
-
-                grayscale_flag = !grayscale_flag;
                 SetImage(CurrentImage);
             }
             catch { }
@@ -1037,9 +1156,10 @@ namespace Croquis_.NET_Framework_
 
         private void menuProgress_Click(object sender, RoutedEventArgs e)
         {
+            menuProgress.IsChecked = !menuProgress.IsChecked;
             if (reset_flag == false)
             {
-                if (progressbar.Visibility == Visibility.Visible)
+                if (!menuProgress.IsChecked)
                 {
                     progressbar.Visibility = Visibility.Hidden;
                     RowDefinition.Height = new GridLength(0);
@@ -1106,7 +1226,8 @@ namespace Croquis_.NET_Framework_
 
         private void HIdeThumbnail()
         {
-            if (thumbnailColumn.Width.Value != 0)
+            menuListview.IsChecked = !menuListview.IsChecked;
+            if (!menuListview.IsChecked)
             {
                 old_thumbnailColumnWidth = thumbnailColumn.Width;
                 thumbnailColumn.MinWidth = 0;
@@ -1120,10 +1241,30 @@ namespace Croquis_.NET_Framework_
             {
                 thumbnailColumn.MinWidth = 160;
                 thumbnailColumn.Width = old_thumbnailColumnWidth;
-                GridSplitterColumn.MinWidth = 10;
+                GridSplitterColumn.MinWidth = 7;
                 GridSplitterColumn.Width = new GridLength(7, GridUnitType.Auto);
                 listview1.IsEnabled = true;
                 Panel.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void HIdeMenu()
+        {
+            if (MenuColumn.Width != new GridLength(0,GridUnitType.Star))
+            {
+                MenuColumn.MinWidth = 0;
+                MenuColumn.Width = new GridLength(0, GridUnitType.Star);
+                GridSplitterColumn0.MinWidth = 0;
+                GridSplitterColumn0.Width = new GridLength(0, GridUnitType.Auto);
+                Panel0.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                MenuColumn.MinWidth = 160;
+                MenuColumn.Width = new GridLength(160,GridUnitType.Auto);
+                GridSplitterColumn0.MinWidth = 7;
+                GridSplitterColumn0.Width = new GridLength(7, GridUnitType.Auto);
+                Panel0.Visibility = Visibility.Hidden;
             }
         }
 
@@ -1179,6 +1320,19 @@ namespace Croquis_.NET_Framework_
 
         private void mainwindow_Closing(object sender, CancelEventArgs e)
         {
+            appSettings.OldInterval = Interval_time;
+            
+            List<string> ls = new List<string>();
+            if (appSettings.Memory == true)
+            {
+                foreach (var item in listImages)
+                {
+                    ls.Add(item.Name);
+                }
+            }
+            appSettings.FileNames = ls.ToArray();
+            appSettings.Number = listview1.SelectedIndex;
+
             Save(appSettings,settingsFileName);
         }
 
@@ -1247,12 +1401,14 @@ namespace Croquis_.NET_Framework_
 
         private void Panel_MouseEnter(object sender, MouseEventArgs e)
         {
-            Panel.Background = Brushes.LightGray;
+            //Panel.Background = Brushes.LightGray;
+            dockArrow.Visibility = Visibility.Visible;
         }
 
         private void Panel_MouseLeave(object sender, MouseEventArgs e)
         {
-            Panel.Background = Brushes.Transparent;
+            dockArrow.Visibility = Visibility.Hidden;
+            //Panel.Background = Brushes.Transparent;
         }
 
         private void MenuGenerateRandomNum_Click(object sender, RoutedEventArgs e)
@@ -1277,7 +1433,56 @@ namespace Croquis_.NET_Framework_
             AS.Owner = GetWindow(this);
             AS.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             AS.ShowDialog();
-            AS.Close();
+            RenderOptions.SetBitmapScalingMode(image_, appSettings.BitmapScalingMode);
+            itemCustomInterval.DataContext = "Custom : " + new TimeSpan(0, 0, appSettings.CustomInterval).ToString(@"mm\:ss");
+            vm.InfoTextSize = appSettings.InfoTextSize;
+            vm.Info_HorizontalAlignment = appSettings.Horizontal.ToString();
+            vm.Info_VerticalAlignment = appSettings.Vertical.ToString();
+        }
+
+        private void MenuFlip_Click(object sender, RoutedEventArgs e)
+        {
+            image_.RenderTransformOrigin = new Point(0.5, 0.5);
+            ScaleTransform flipTrans = new ScaleTransform();
+            MenuFlip.IsChecked = !MenuFlip.IsChecked;
+            if(MenuFlip.IsChecked == true)
+            {
+                flipTrans.ScaleX = -1;
+                image_.RenderTransform = flipTrans;
+            }
+            else
+            {
+                flipTrans.ScaleX = 1;
+                image_.RenderTransform = flipTrans;
+            }
+        }
+
+        private void GridSplitter0_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (e.GetPosition(this) == oldpoint)
+            {
+                HIdeMenu();
+            }
+        }
+
+        private void GridSplitter0_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            oldpoint = e.GetPosition(this);
+        }
+
+        private void Panel0_MouseEnter(object sender, MouseEventArgs e)
+        {
+            dockArrow0.Visibility = Visibility.Visible;
+        }
+
+        private void Panel0_MouseLeave(object sender, MouseEventArgs e)
+        {
+            dockArrow0.Visibility = Visibility.Hidden;
+        }
+
+        private void Panel0_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            HIdeMenu();
         }
     }
     public static class Extention

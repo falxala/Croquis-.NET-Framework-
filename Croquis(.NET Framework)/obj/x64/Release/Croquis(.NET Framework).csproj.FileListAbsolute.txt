@@ -1,0 +1,39 @@
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\x64\Release\Croquis(.NET Framework).csproj.AssemblyReference.cache
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\x64\Release\Croquis.exe.config
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\x64\Release\AppSetting.g.cs
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\x64\Release\MainWindow.g.cs
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\x64\Release\App.g.cs
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\x64\Release\Croquis_MarkupCompile.cache
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\x64\Release\Croquis_MarkupCompile.lref
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\bin\x64\Release\Croquis.exe.config
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\bin\x64\Release\Croquis.exe.manifest
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\bin\x64\Release\Croquis.application
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\bin\x64\Release\Croquis.exe
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\bin\x64\Release\ja\Croquis.resources.dll
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\bin\x64\Release\FluentWPF.dll
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\bin\x64\Release\Microsoft.Xaml.Behaviors.dll
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\bin\x64\Release\Microsoft.Xaml.Behaviors.pdb
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\bin\x64\Release\System.ComponentModel.Annotations.dll
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\bin\x64\Release\System.Runtime.CompilerServices.Unsafe.dll
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\bin\x64\Release\System.Threading.Tasks.Extensions.dll
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\bin\x64\Release\System.Buffers.dll
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\bin\x64\Release\System.Drawing.Common.dll
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\bin\x64\Release\System.Numerics.Vectors.dll
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\bin\x64\Release\System.ValueTuple.dll
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\bin\x64\Release\System.Buffers.xml
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\bin\x64\Release\System.Drawing.Common.xml
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\bin\x64\Release\System.Numerics.Vectors.xml
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\bin\x64\Release\System.ValueTuple.xml
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\x64\Release\App.baml
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\x64\Release\AppSetting.baml
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\x64\Release\MainWindow.baml
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\x64\Release\Croquis.g.resources
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\x64\Release\Croquis_.NET_Framework_.Properties.Resources.resources
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\x64\Release\Croquis_.NET_Framework_.Properties.Resources.ja.resources
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\x64\Release\Croquis(.NET Framework).csproj.GenerateResource.cache
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\x64\Release\Croquis(.NET Framework).csproj.CoreCompileInputs.cache
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\x64\Release\ja\Croquis.resources.dll
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\x64\Release\Croquis.exe.manifest
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\x64\Release\Croquis.application
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\x64\Release\Croquis(.NET Framework).csproj.CopyComplete
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\x64\Release\Croquis.exe

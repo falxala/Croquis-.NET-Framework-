@@ -117,11 +117,17 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Alignment" xml:space="preserve">
+    <value>ステータス表示位置</value>
+  </data>
   <data name="CBItemAscending" xml:space="preserve">
     <value>昇順</value>
   </data>
   <data name="CBItemDescending" xml:space="preserve">
     <value>降順</value>
+  </data>
+  <data name="CBItemFant" xml:space="preserve">
+    <value>高品質補間</value>
   </data>
   <data name="CBItemFIFO" xml:space="preserve">
     <value>FIFO（入力順）</value>
@@ -129,8 +135,41 @@
   <data name="CBItemLIFO" xml:space="preserve">
     <value>LIFO（入力逆順）</value>
   </data>
+  <data name="CBItemLinear" xml:space="preserve">
+    <value>線形補間</value>
+  </data>
+  <data name="CBItemNearestNeighbor" xml:space="preserve">
+    <value>最近隣補間</value>
+  </data>
   <data name="CBItemRandom" xml:space="preserve">
     <value>ランダム</value>
+  </data>
+  <data name="CustomInterval" xml:space="preserve">
+    <value>カスタムインターバル</value>
+  </data>
+  <data name="GroupDisplaySettings" xml:space="preserve">
+    <value>表示設定</value>
+  </data>
+  <data name="GroupeUIText" xml:space="preserve">
+    <value>UIテキスト設定</value>
+  </data>
+  <data name="GroupSlideSettings" xml:space="preserve">
+    <value>スライドショー設定</value>
+  </data>
+  <data name="Image" xml:space="preserve">
+    <value>画像リスト</value>
+  </data>
+  <data name="InterpolationMethod" xml:space="preserve">
+    <value>補間方式</value>
+  </data>
+  <data name="LowerLeft" xml:space="preserve">
+    <value>左下</value>
+  </data>
+  <data name="LowerRight" xml:space="preserve">
+    <value>右下</value>
+  </data>
+  <data name="MemoryOfHistory" xml:space="preserve">
+    <value>履歴の記憶</value>
   </data>
   <data name="Menu15s" xml:space="preserve">
     <value>15秒</value>
@@ -168,23 +207,26 @@
   <data name="MenuEnable" xml:space="preserve">
     <value>有効</value>
   </data>
+  <data name="MenuFlip" xml:space="preserve">
+    <value>左右反転</value>
+  </data>
   <data name="MenuFullScreen" xml:space="preserve">
-    <value>フルスクリーン表示</value>
+    <value>フルスクリーン</value>
   </data>
   <data name="MenuGenerateRandomNum" xml:space="preserve">
-    <value>乱数を生成</value>
+    <value>乱数を再生成</value>
   </data>
   <data name="MenuGrayScale" xml:space="preserve">
-    <value>グレースケール表示</value>
+    <value>グレースケール</value>
   </data>
   <data name="MenuGrid" xml:space="preserve">
-    <value>グリッド表示</value>
+    <value>グリッド</value>
   </data>
   <data name="MenuInterval" xml:space="preserve">
-    <value>表示間隔</value>
+    <value>インターバル</value>
   </data>
   <data name="MenuListview" xml:space="preserve">
-    <value>リストビュー展開</value>
+    <value>リストビュー</value>
   </data>
   <data name="MenuPauseResume" xml:space="preserve">
     <value>再生/一時停止</value>
@@ -196,7 +238,7 @@
     <value>準備時間</value>
   </data>
   <data name="MenuProgress" xml:space="preserve">
-    <value>シークバー表示</value>
+    <value>シークバー</value>
   </data>
   <data name="MenuQuit" xml:space="preserve">
     <value>終了</value>
@@ -216,14 +258,32 @@
   <data name="MenuWhite" xml:space="preserve">
     <value>白</value>
   </data>
+  <data name="Not_record" xml:space="preserve">
+    <value>記憶しない</value>
+  </data>
   <data name="OutOfMemoryException" xml:space="preserve">
     <value>アプリケーションで利用できるメモリが不足しているためリセットします</value>
   </data>
   <data name="PreparationTime" xml:space="preserve">
     <value>準備時間</value>
   </data>
+  <data name="Record" xml:space="preserve">
+    <value>記憶する</value>
+  </data>
   <data name="ScrollIntoView" xml:space="preserve">
     <value>選択アイテムまでスクロール</value>
+  </data>
+  <data name="StatusTextSize" xml:space="preserve">
+    <value>ステータステキストサイズ</value>
+  </data>
+  <data name="TooltipAlignment" xml:space="preserve">
+    <value>テキストの表示位置を選択します</value>
+  </data>
+  <data name="TooltipInterpolationMethod" xml:space="preserve">
+    <value>補間方式を選択します
+高品質補間：拡大縮小時の劣化を抑えます
+線形補間：低品質ですが高速に補間します
+最近隣補間：ピクセル形状を維持したまま拡大縮小します</value>
   </data>
   <data name="TooltipPreparationTime" xml:space="preserve">
     <value>準備時間を設定します（秒）</value>
@@ -239,5 +299,11 @@
   </data>
   <data name="UnifiedResolution" xml:space="preserve">
     <value>統一解像度</value>
+  </data>
+  <data name="UpperLeft" xml:space="preserve">
+    <value>左上</value>
+  </data>
+  <data name="UpperRight" xml:space="preserve">
+    <value>右上</value>
   </data>
 </root>

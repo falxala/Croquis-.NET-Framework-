@@ -61,6 +61,15 @@ namespace Croquis_.NET_Framework_.Properties {
         }
         
         /// <summary>
+        ///   Alignment に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Alignment {
+            get {
+                return ResourceManager.GetString("Alignment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ascending に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string CBItemAscending {
@@ -75,6 +84,15 @@ namespace Croquis_.NET_Framework_.Properties {
         public static string CBItemDescending {
             get {
                 return ResourceManager.GetString("CBItemDescending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Fant に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string CBItemFant {
+            get {
+                return ResourceManager.GetString("CBItemFant", resourceCulture);
             }
         }
         
@@ -97,11 +115,65 @@ namespace Croquis_.NET_Framework_.Properties {
         }
         
         /// <summary>
+        ///   Linear に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string CBItemLinear {
+            get {
+                return ResourceManager.GetString("CBItemLinear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   NearestNeighbor に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string CBItemNearestNeighbor {
+            get {
+                return ResourceManager.GetString("CBItemNearestNeighbor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Random に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string CBItemRandom {
             get {
                 return ResourceManager.GetString("CBItemRandom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Customize Interval に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string CustomInterval {
+            get {
+                return ResourceManager.GetString("CustomInterval", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Display Settings に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string GroupDisplaySettings {
+            get {
+                return ResourceManager.GetString("GroupDisplaySettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   UIText Settings に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string GroupeUIText {
+            get {
+                return ResourceManager.GetString("GroupeUIText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Slideshow settings に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string GroupSlideSettings {
+            get {
+                return ResourceManager.GetString("GroupSlideSettings", resourceCulture);
             }
         }
         
@@ -112,6 +184,51 @@ namespace Croquis_.NET_Framework_.Properties {
             get {
                 object obj = ResourceManager.GetObject("icon255x255", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Image に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Image {
+            get {
+                return ResourceManager.GetString("Image", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Interpolation Method に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string InterpolationMethod {
+            get {
+                return ResourceManager.GetString("InterpolationMethod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Lower Left に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string LowerLeft {
+            get {
+                return ResourceManager.GetString("LowerLeft", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Lower Right に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string LowerRight {
+            get {
+                return ResourceManager.GetString("LowerRight", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Memory of history に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string MemoryOfHistory {
+            get {
+                return ResourceManager.GetString("MemoryOfHistory", resourceCulture);
             }
         }
         
@@ -220,6 +337,15 @@ namespace Croquis_.NET_Framework_.Properties {
         public static string MenuEnable {
             get {
                 return ResourceManager.GetString("MenuEnable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Flip に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string MenuFlip {
+            get {
+                return ResourceManager.GetString("MenuFlip", resourceCulture);
             }
         }
         
@@ -368,6 +494,15 @@ namespace Croquis_.NET_Framework_.Properties {
         }
         
         /// <summary>
+        ///   Not record に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Not_record {
+            get {
+                return ResourceManager.GetString("Not_record", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Reset because there is insufficient memory available for the application に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string OutOfMemoryException {
@@ -386,6 +521,15 @@ namespace Croquis_.NET_Framework_.Properties {
         }
         
         /// <summary>
+        ///   Record に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Record {
+            get {
+                return ResourceManager.GetString("Record", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   ScrollIntoView に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string ScrollIntoView {
@@ -400,6 +544,33 @@ namespace Croquis_.NET_Framework_.Properties {
         public static string Start {
             get {
                 return ResourceManager.GetString("Start", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   StatusText Size に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string StatusTextSize {
+            get {
+                return ResourceManager.GetString("StatusTextSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Select the text display position に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string TooltipAlignment {
+            get {
+                return ResourceManager.GetString("TooltipAlignment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Select the interpolation method に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string TooltipInterpolationMethod {
+            get {
+                return ResourceManager.GetString("TooltipInterpolationMethod", resourceCulture);
             }
         }
         
@@ -445,6 +616,24 @@ namespace Croquis_.NET_Framework_.Properties {
         public static string UnifiedResolution {
             get {
                 return ResourceManager.GetString("UnifiedResolution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Upper Left に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string UpperLeft {
+            get {
+                return ResourceManager.GetString("UpperLeft", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Upper Right に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string UpperRight {
+            get {
+                return ResourceManager.GetString("UpperRight", resourceCulture);
             }
         }
     }

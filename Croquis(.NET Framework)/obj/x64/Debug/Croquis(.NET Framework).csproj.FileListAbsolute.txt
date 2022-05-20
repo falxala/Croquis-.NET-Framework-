@@ -38,3 +38,5 @@ C:\Users\fortia\source\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj
 C:\Users\fortia\source\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\x64\Debug\Croquis.application
 C:\Users\fortia\source\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\x64\Debug\Croquis.exe
 C:\Users\fortia\source\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\x64\Debug\Croquis.pdb
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\x64\Debug\Croquis.exe
+D:\fortia\Documents\repos\Croquis(.NET Framework)\Croquis(.NET Framework)\obj\x64\Debug\Croquis.pdb

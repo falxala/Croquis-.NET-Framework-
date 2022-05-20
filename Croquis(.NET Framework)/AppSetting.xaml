@@ -6,18 +6,55 @@
         xmlns:local="clr-namespace:Croquis_.NET_Framework_"
         mc:Ignorable="d"
         xmlns:properties="clr-namespace:Croquis_.NET_Framework_.Properties"
-        Title="AppSetting" Height="360" Width="360" MinWidth="360" Loaded="Window_Loaded">
+        Title="AppSetting" Height="520" Width="420" MinWidth="420" Loaded="Window_Loaded" MinHeight="520" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+    <Window.Resources>
+        <Style TargetType="{x:Type ComboBox}">
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Foreground" Value="Gray"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
     <Grid>
-        <ComboBox x:Name="ComboQuality" Margin="0,13,10,0" VerticalAlignment="Top" FontSize="14" FontFamily="Meiryo UI" HorizontalAlignment="Right" Width="100" SelectionChanged="ComboQuality_SelectionChanged" ToolTip="{x:Static properties:Resources.TooltipQuality}">
-            <ComboBoxItem Content="{x:Static properties:Resources.MenuDisable}"/>
-            <ComboBoxItem Content="{x:Static properties:Resources.MenuEnable}"/>
-        </ComboBox>
-        <TextBlock HorizontalAlignment="Left" Margin="10,19,0,0" TextWrapping="Wrap" Text="{x:Static properties:Resources.UnificationOfDisplayQuality}" VerticalAlignment="Top" FontFamily="Meiryo UI" FontSize="14"/>
-        <ComboBox x:Name="ComboResolution" Margin="0,42,10,0" VerticalAlignment="Top" FontSize="14" FontFamily="Meiryo UI" HorizontalAlignment="Right" Width="100" SelectionChanged="ComboResolution_SelectionChanged" ToolTip="{x:Static properties:Resources.TooltipResolution}" >
-        </ComboBox>
-        <TextBlock HorizontalAlignment="Left" Margin="38,48,0,0" TextWrapping="Wrap" Text="{x:Static properties:Resources.UnifiedResolution}" VerticalAlignment="Top" FontFamily="Meiryo UI" FontSize="14"/>
-        <Rectangle Fill="Black" HorizontalAlignment="Left" Height="10" Margin="18,53,0,0" VerticalAlignment="Top" Width="10"/>
-        <TextBlock HorizontalAlignment="Left" Margin="10,78,0,0" TextWrapping="Wrap" Text="{x:Static properties:Resources.PreparationTime}" VerticalAlignment="Top" FontFamily="Meiryo UI" FontSize="14"/>
-        <ComboBox x:Name="ComboPreparationTime" Margin="0,72,10,0" VerticalAlignment="Top" FontSize="14" FontFamily="Meiryo UI" HorizontalAlignment="Right" Width="100" ToolTip="{x:Static properties:Resources.TooltipPreparationTime}" SelectionChanged="ComboPreparationTime_SelectionChanged" />
+        <GroupBox Margin="10,10,10,0" FontSize="14" Header="{x:Static properties:Resources.GroupDisplaySettings}" Height="135" VerticalAlignment="Top">
+            <Grid>
+                <ComboBox x:Name="ComboQuality" Margin="0,10,10,0" VerticalAlignment="Top" FontSize="14" FontFamily="Meiryo UI" HorizontalAlignment="Right" Width="150" SelectionChanged="ComboQuality_SelectionChanged" ToolTip="{x:Static properties:Resources.TooltipQuality}">
+                    <ComboBoxItem Content="{x:Static properties:Resources.MenuDisable}"/>
+                    <ComboBoxItem Content="{x:Static properties:Resources.MenuEnable}"/>
+                </ComboBox>
+                <TextBlock HorizontalAlignment="Left" Margin="10,16,0,0" TextWrapping="Wrap" Text="{x:Static properties:Resources.UnificationOfDisplayQuality}" VerticalAlignment="Top" FontFamily="Meiryo UI" FontSize="14"/>
+                <ComboBox x:Name="ComboResolution" Margin="0,42,10,0" VerticalAlignment="Top" FontSize="14" FontFamily="Meiryo UI" HorizontalAlignment="Right" Width="150" SelectionChanged="ComboResolution_SelectionChanged" ToolTip="{x:Static properties:Resources.TooltipResolution}" >
+                </ComboBox>
+                <TextBlock HorizontalAlignment="Left" Margin="38,48,0,0" TextWrapping="Wrap" Text="{x:Static properties:Resources.UnifiedResolution}" VerticalAlignment="Top" FontFamily="Meiryo UI" FontSize="14"/>
+                <Rectangle Fill="Black" HorizontalAlignment="Left" Height="10" Margin="18,53,0,0" VerticalAlignment="Top" Width="10"/>
+                <TextBlock HorizontalAlignment="Left" Margin="10,77,0,0" TextWrapping="Wrap" Text="{x:Static properties:Resources.InterpolationMethod}" VerticalAlignment="Top" FontFamily="Meiryo UI" FontSize="14"/>
+                <ComboBox x:Name="ComboInterpolationMethod" Margin="0,71,10,0" VerticalAlignment="Top" FontSize="14" FontFamily="Meiryo UI" HorizontalAlignment="Right" Width="150" ToolTip="{x:Static properties:Resources.TooltipInterpolationMethod}" SelectionChanged="ComboInterpolationMethod_SelectionChanged" />
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="{x:Static properties:Resources.GroupSlideSettings}" Margin="10,150,10,0" FontSize="14" Height="105" VerticalAlignment="Top">
+            <Grid>
+                <TextBlock HorizontalAlignment="Left" Margin="10,16,0,0" TextWrapping="Wrap" Text="{x:Static properties:Resources.PreparationTime}" VerticalAlignment="Top" FontFamily="Meiryo UI" FontSize="14"/>
+                <ComboBox x:Name="ComboPreparationTime" Margin="0,10,10,0" VerticalAlignment="Top" FontSize="14" FontFamily="Meiryo UI" HorizontalAlignment="Right" Width="150" ToolTip="{x:Static properties:Resources.TooltipPreparationTime}" SelectionChanged="ComboPreparationTime_SelectionChanged" />
+                <TextBlock HorizontalAlignment="Left" Margin="10,45,0,0" TextWrapping="Wrap" Text="{x:Static properties:Resources.CustomInterval}" VerticalAlignment="Top" FontFamily="Meiryo UI" FontSize="14"/>
+                <TextBox x:Name="TxtCustomizeInterval" InputMethod.IsInputMethodEnabled="False" CommandManager.PreviewExecuted="TextBoxPrice_PreviewExecuted" Height="23" Margin="0,44,10,0" TextWrapping="Wrap" VerticalAlignment="Top" HorizontalAlignment="Right" Width="150" PreviewTextInput="TextBox_TextInput" TextChanged="TextBox_TextChanged"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="{x:Static properties:Resources.GroupeUIText}" Margin="10,260,10,0" FontSize="14" Height="105" VerticalAlignment="Top">
+            <Grid>
+                <TextBlock HorizontalAlignment="Left" Margin="10,16,0,0" TextWrapping="Wrap" Text="{x:Static properties:Resources.Alignment}" VerticalAlignment="Top" FontFamily="Meiryo UI" FontSize="14"/>
+                <ComboBox x:Name="ComboAlignment" Margin="0,10,10,0" VerticalAlignment="Top" FontSize="14" FontFamily="Meiryo UI" HorizontalAlignment="Right" Width="150" ToolTip="{x:Static properties:Resources.TooltipAlignment}" SelectionChanged="ComboAlignment_SelectionChanged" />
+                <TextBlock HorizontalAlignment="Left" Margin="10,45,0,0" TextWrapping="Wrap" Text="{x:Static properties:Resources.StatusTextSize}" VerticalAlignment="Top" FontFamily="Meiryo UI" FontSize="14"/>
+                <TextBox x:Name="TBStatusTxtSize" InputMethod.IsInputMethodEnabled="False" CommandManager.PreviewExecuted="TextBoxPrice_PreviewExecuted" Height="23" Margin="0,44,10,0" TextWrapping="Wrap" VerticalAlignment="Top" HorizontalAlignment="Right" Width="150" PreviewTextInput="TextBox_TextInput" TextChanged="TBStatusTxtSize_TextChanged"/>
+            </Grid>
+        </GroupBox>
+        <TextBlock x:Name="VerText" HorizontalAlignment="Right" Margin="0,0,8.981,9.83" TextWrapping="Wrap" Text="TextBlock" FontSize="14" Height="19" VerticalAlignment="Bottom"/>
+        <GroupBox Header="{x:Static properties:Resources.MemoryOfHistory}" Margin="11,370,8.981,0" FontSize="14" Height="76" VerticalAlignment="Top">
+            <Grid>
+                <TextBlock HorizontalAlignment="Left" Margin="10,16,0,0" TextWrapping="Wrap" Text="{x:Static properties:Resources.Image}" VerticalAlignment="Top" FontFamily="Meiryo UI" FontSize="14"/>
+                <ComboBox x:Name="ComboAlignment1" Margin="0,10,10,0" VerticalAlignment="Top" FontSize="14" FontFamily="Meiryo UI" HorizontalAlignment="Right" Width="150"  SelectionChanged="ComboAlignment1_SelectionChanged" />
+            </Grid>
+        </GroupBox>
     </Grid>
 </Window>

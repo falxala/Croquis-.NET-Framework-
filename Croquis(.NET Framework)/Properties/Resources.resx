@@ -117,11 +117,17 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Alignment" xml:space="preserve">
+    <value>Alignment</value>
+  </data>
   <data name="CBItemAscending" xml:space="preserve">
     <value>Ascending</value>
   </data>
   <data name="CBItemDescending" xml:space="preserve">
     <value>Descending</value>
+  </data>
+  <data name="CBItemFant" xml:space="preserve">
+    <value>Fant</value>
   </data>
   <data name="CBItemFIFO" xml:space="preserve">
     <value>First In First Out</value>
@@ -129,12 +135,45 @@
   <data name="CBItemLIFO" xml:space="preserve">
     <value>Last In First Out</value>
   </data>
+  <data name="CBItemLinear" xml:space="preserve">
+    <value>Linear</value>
+  </data>
+  <data name="CBItemNearestNeighbor" xml:space="preserve">
+    <value>NearestNeighbor</value>
+  </data>
   <data name="CBItemRandom" xml:space="preserve">
     <value>Random</value>
+  </data>
+  <data name="CustomInterval" xml:space="preserve">
+    <value>Customize Interval</value>
+  </data>
+  <data name="GroupDisplaySettings" xml:space="preserve">
+    <value>Display Settings</value>
+  </data>
+  <data name="GroupeUIText" xml:space="preserve">
+    <value>UIText Settings</value>
+  </data>
+  <data name="GroupSlideSettings" xml:space="preserve">
+    <value>Slideshow settings</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="icon255x255" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\icon255x255.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Image" xml:space="preserve">
+    <value>Image</value>
+  </data>
+  <data name="InterpolationMethod" xml:space="preserve">
+    <value>Interpolation Method</value>
+  </data>
+  <data name="LowerLeft" xml:space="preserve">
+    <value>Lower Left</value>
+  </data>
+  <data name="LowerRight" xml:space="preserve">
+    <value>Lower Right</value>
+  </data>
+  <data name="MemoryOfHistory" xml:space="preserve">
+    <value>Memory of history</value>
   </data>
   <data name="Menu15s" xml:space="preserve">
     <value>15s</value>
@@ -171,6 +210,9 @@
   </data>
   <data name="MenuEnable" xml:space="preserve">
     <value>Enable</value>
+  </data>
+  <data name="MenuFlip" xml:space="preserve">
+    <value>Flip</value>
   </data>
   <data name="MenuFullScreen" xml:space="preserve">
     <value>FullScreen</value>
@@ -220,17 +262,32 @@
   <data name="MenuWhite" xml:space="preserve">
     <value>White</value>
   </data>
+  <data name="Not_record" xml:space="preserve">
+    <value>Not record</value>
+  </data>
   <data name="OutOfMemoryException" xml:space="preserve">
     <value>Reset because there is insufficient memory available for the application</value>
   </data>
   <data name="PreparationTime" xml:space="preserve">
     <value>PreparationTime</value>
   </data>
+  <data name="Record" xml:space="preserve">
+    <value>Record</value>
+  </data>
   <data name="ScrollIntoView" xml:space="preserve">
     <value>ScrollIntoView</value>
   </data>
   <data name="Start" xml:space="preserve">
     <value>Press SPACE to start</value>
+  </data>
+  <data name="StatusTextSize" xml:space="preserve">
+    <value>StatusText Size</value>
+  </data>
+  <data name="TooltipAlignment" xml:space="preserve">
+    <value>Select the text display position</value>
+  </data>
+  <data name="TooltipInterpolationMethod" xml:space="preserve">
+    <value>Select the interpolation method</value>
   </data>
   <data name="TooltipPreparationTime" xml:space="preserve">
     <value>Set the preparation time (second)</value>
@@ -246,5 +303,11 @@
   </data>
   <data name="UnifiedResolution" xml:space="preserve">
     <value>Unified Resolution</value>
+  </data>
+  <data name="UpperLeft" xml:space="preserve">
+    <value>Upper Left</value>
+  </data>
+  <data name="UpperRight" xml:space="preserve">
+    <value>Upper Right</value>
   </data>
 </root>

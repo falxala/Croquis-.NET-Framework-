@@ -8,7 +8,7 @@
         xmlns:local="clr-namespace:Croquis_.NET_Framework_"
         xmlns:properties="clr-namespace:Croquis_.NET_Framework_.Properties"
         mc:Ignorable="d"
-        Title="Croquis Slideshow" AllowDrop="True" PreviewKeyDown="mainwindow_PreviewKeyDown" Height="400" Width="600" Loaded="mainwindow_Loaded" MinWidth="480" MinHeight="360" IsTabStop="False" PreviewMouseDoubleClick="mainwindow_PreviewMouseDoubleClick" Closing="mainwindow_Closing" MouseMove="mainwindow_MouseMove">
+        Title="Croquis Slideshow" AllowDrop="True" PreviewKeyDown="mainwindow_PreviewKeyDown" Height="400" Width="600" Loaded="mainwindow_Loaded" MinWidth="600" MinHeight="360" IsTabStop="False" PreviewMouseDoubleClick="mainwindow_PreviewMouseDoubleClick" Closing="mainwindow_Closing" MouseMove="mainwindow_MouseMove">
 
     <Window.Resources>
         <Style  TargetType="{x:Type fw:AcrylicContextMenu}">
@@ -307,12 +307,14 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="500*" MinWidth="280"/>
+            <ColumnDefinition x:Name="MenuColumn" Width="155*" MaxWidth="155"/>
+            <ColumnDefinition x:Name="GridSplitterColumn0" Width="Auto" MinWidth="7"/>
+            <ColumnDefinition Width="268*" MinWidth="250"/>
             <ColumnDefinition x:Name="GridSplitterColumn" Width="Auto" MinWidth="7"/>
-            <ColumnDefinition x:Name="thumbnailColumn" Width="155*" MinWidth="155"/>
+            <ColumnDefinition x:Name="thumbnailColumn" MinWidth="155"/>
         </Grid.ColumnDefinitions>
 
-        <Grid x:Name="drawingGrid" Margin="0,0,0,0" Background="#00000000" MouseLeftButtonDown="DragMove_PreviewMouseLeftButtonDown" PreviewDragOver="Image_PreviewDragOver" PreviewDrop="Image_PreviewDrop">
+        <Grid x:Name="drawingGrid" Grid.Column="2" Margin="0,0,0,0" Background="#00000000" MouseLeftButtonDown="DragMove_PreviewMouseLeftButtonDown" PreviewDragOver="Image_PreviewDragOver" PreviewDrop="Image_PreviewDrop">
             <Grid.RowDefinitions>
                 <RowDefinition Height="50*"/>
                 <RowDefinition Height="25*"/>
@@ -321,17 +323,17 @@
             </Grid.RowDefinitions>
 
             <Grid.ContextMenu>
-                <fw:AcrylicContextMenu HasDropShadow="True">
+                <fw:AcrylicContextMenu HasDropShadow="True" Placement="Left">
                     <MenuItem Header="{x:Static properties:Resources.MenuInterval}">
-                        <MenuItem x:Name="item10" Header="{x:Static properties:Resources.Menu15s}" Click="item15_Click"/>
-                        <MenuItem x:Name="item30" Header="{x:Static properties:Resources.Menu30s}" Click="item30_Click"/>
-                        <MenuItem x:Name="item60" Header="{x:Static properties:Resources.Menu60s}" Click="item60_Click"/>
-                        <MenuItem x:Name="item90" Header="{x:Static properties:Resources.Menu90s}" Click="item90_Click"/>
-                        <MenuItem x:Name="item180" Header="{x:Static properties:Resources.Menu180s}" Click="item180_Click"/>
-                        <MenuItem x:Name="item300" Header="{x:Static properties:Resources.Menu300s}" Click="item300_Click"/>
-                        <MenuItem x:Name="item600" Header="{x:Static properties:Resources.Menu600s}" Click="item600_Click"/>
-                        <MenuItem x:Name="item900" Header="{x:Static properties:Resources.Menu900s}" Click="item900_Click"/>
-                        <MenuItem x:Name="itemCustomInterval" Header="{Binding}" Click="itemCustomInterval_Click"/>
+                        <MenuItem x:Name="item10" Header="{x:Static properties:Resources.Menu15s}" Click="item15_Click" InputGestureText="1"/>
+                        <MenuItem x:Name="item30" Header="{x:Static properties:Resources.Menu30s}" Click="item30_Click" InputGestureText="2"/>
+                        <MenuItem x:Name="item60" Header="{x:Static properties:Resources.Menu60s}" Click="item60_Click" InputGestureText="3"/>
+                        <MenuItem x:Name="item90" Header="{x:Static properties:Resources.Menu90s}" Click="item90_Click" InputGestureText="4"/>
+                        <MenuItem x:Name="item180" Header="{x:Static properties:Resources.Menu180s}" Click="item180_Click" InputGestureText="5"/>
+                        <MenuItem x:Name="item300" Header="{x:Static properties:Resources.Menu300s}" Click="item300_Click" InputGestureText="6"/>
+                        <MenuItem x:Name="item600" Header="{x:Static properties:Resources.Menu600s}" Click="item600_Click" InputGestureText="7"/>
+                        <MenuItem x:Name="item900" Header="{x:Static properties:Resources.Menu900s}" Click="item900_Click" InputGestureText="8"/>
+                        <MenuItem x:Name="itemCustomInterval" Header="{Binding}" Click="itemCustomInterval_Click" InputGestureText="9"/>
                     </MenuItem>
                     <Separator />
                     <MenuItem x:Name="MenuStart" Header="{x:Static properties:Resources.MenuStartSlideshow}"  InputGestureText="" Click="MenuStart_Click"/>
@@ -340,8 +342,9 @@
                     <MenuItem x:Name="MenuPreparationTime" Header="{x:Static properties:Resources.MenuPreparationTime}" Click="MenuPreparationTime_Click"/>
                     <Separator />
                     <MenuItem x:Name="FullScreen" Header="{x:Static properties:Resources.MenuFullScreen}" Click="FullScreen_Click" InputGestureText="Enter"/>
-                    <MenuItem Header="{x:Static properties:Resources.MenuGrayScale}" Click="GrayScale" InputGestureText="C or S"/>
-                    <MenuItem Header="{x:Static properties:Resources.MenuGrid}" Click="Grid" InputGestureText="G"/>
+                    <MenuItem x:Name="MenuGrayScale" Header="{x:Static properties:Resources.MenuGrayScale}" Click="GrayScale" InputGestureText="S"/>
+                    <MenuItem x:Name="MenuFlip" Header="{x:Static properties:Resources.MenuFlip}" InputGestureText="F" Click="MenuFlip_Click"/>
+                    <MenuItem x:Name="MenuGrid" Header="{x:Static properties:Resources.MenuGrid}" Click="Grid" InputGestureText="G"/>
                     <MenuItem x:Name="menuListview" Header="{x:Static properties:Resources.MenuListview}" InputGestureText="Tab" Click="menuListview_Click"/>
                     <MenuItem x:Name="MenuInfo" Header="{x:Static properties:Resources.MenuStatus}" Click="info_Click" InputGestureText="I"/>
                     <MenuItem x:Name="menuProgress" Header="{x:Static properties:Resources.MenuProgress}" Click="menuProgress_Click" InputGestureText="P"/>
@@ -350,8 +353,8 @@
                         <MenuItem x:Name="MenuBlackBackground" Header="{x:Static properties:Resources.MenuBlack}" Click="Black"/>
                     </MenuItem>
                     <Separator></Separator>
-                    <MenuItem x:Name="reset" Header="{x:Static properties:Resources.MenuReset}" Click="reset_Click"/>
                     <MenuItem x:Name="preferences" Header="{x:Static properties:Resources.MenuPreferences}" Click="preferences_Click"/>
+                    <MenuItem x:Name="reset" Header="{x:Static properties:Resources.MenuReset}" Click="reset_Click"/>
                     <MenuItem x:Name="quit" Header="{x:Static properties:Resources.MenuQuit}" Click="quit_Click"/>
                 </fw:AcrylicContextMenu>
             </Grid.ContextMenu>
@@ -359,7 +362,7 @@
 
             <Image x:Name="image_" AllowDrop="True" Grid.RowSpan="3"/>
 
-            <Viewbox Margin="10" Grid.Row="1">
+            <Viewbox Margin="24,10" Grid.Row="1">
                 <TextBlock x:Name="text"  Text="{Binding Message}" FontFamily="Arial Black" FontSize="60" UseLayoutRounding="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black" Opacity="0.8" TextWrapping="WrapWithOverflow" TextAlignment="Center"/>
             </Viewbox>
 
@@ -368,13 +371,18 @@
                 Loaded="canvas_Loaded"
                 SizeChanged="canvas_SizeChanged" Visibility="Hidden" Grid.RowSpan="3"/>
 
+            <Label  Grid.RowSpan="3" x:Name="info_label" Content="{Binding info_Message}" HorizontalAlignment="{Binding Info_HorizontalAlignment}" VerticalAlignment="{Binding Info_VerticalAlignment}" Background="#7FFFFFFF" RenderTransformOrigin="0.5,0.5" Padding="5,0,5,2" FontSize="{Binding InfoTextSize}" FontFamily="Arial" Margin="10,0"/>
             <ProgressBar x:Name="progressbar" Grid.Row="3" Foreground="{Binding ProgressColor}" Background="#4C000000" BorderBrush="{x:Null}" VerticalAlignment="Stretch"/>
-            <Label x:Name="info_label" Content="{Binding info_Message}" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#7FFFFFFF" RenderTransformOrigin="0.5,0.5" Padding="5,0,5,2" FontSize="{Binding InfoTextSize}" FontWeight="Bold"/>
-            <DockPanel x:Name="Panel" Grid.RowSpan="4" HorizontalAlignment="Right" Width="24" Cursor="Hand" Background="#00000000" Opacity="0.5" PreviewMouseLeftButtonDown="Panel_MouseDown" MouseEnter="Panel_MouseEnter" MouseLeave="Panel_MouseLeave"/>
+            <DockPanel x:Name="Panel" Grid.RowSpan="4" HorizontalAlignment="Right" Width="24" Cursor="Hand" Background="#00000000" PreviewMouseLeftButtonDown="Panel_MouseDown" MouseEnter="Panel_MouseEnter" MouseLeave="Panel_MouseLeave">
+                <TextBlock x:Name="dockArrow" TextWrapping="Wrap" Text="&lt;" Margin="0" FontSize="24" FontWeight="Bold" FontFamily="Arial" DockPanel.Dock="Top" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Gray"/>
+            </DockPanel>
+            <DockPanel x:Name="Panel0" Grid.RowSpan="4" HorizontalAlignment="Left" Width="24" Cursor="Hand" Background="#00000000" PreviewMouseLeftButtonDown="Panel0_MouseDown" MouseEnter="Panel0_MouseEnter" MouseLeave="Panel0_MouseLeave">
+                <TextBlock x:Name="dockArrow0" TextWrapping="Wrap" Text="&gt;" Margin="0" FontSize="24" FontWeight="Bold" FontFamily="Arial" DockPanel.Dock="Top" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Gray"/>
+            </DockPanel>
         </Grid>
 
 
-        <Grid Grid.Column="2" Background="White">
+        <Grid Grid.Column="4" Background="White">
             <ListView x:Name="listview1" ItemsSource="{Binding}"  ScrollViewer.HorizontalScrollBarVisibility="Disabled" BorderBrush="White" SelectionChanged="Listview_SelectionChanged" Focusable="False" Margin="0,32,0,0" PreviewDrop="Image_PreviewDrop" PreviewDragOver="Image_PreviewDragOver">
                 <ListView.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -398,7 +406,7 @@
                         <MenuItem x:Name="MenuGenerateRandomNum" Header="{x:Static properties:Resources.MenuGenerateRandomNum}" Click="MenuGenerateRandomNum_Click"/>
                         <MenuItem x:Name="ScrollIntoView" Header="{x:Static properties:Resources.ScrollIntoView}" Click="ScrollIntoView_Click"/>
                     </fw:AcrylicContextMenu>
-                    </ComboBox.ContextMenu>
+                </ComboBox.ContextMenu>
                 <ComboBoxItem Content="{x:Static properties:Resources.CBItemFIFO}"/>
                 <ComboBoxItem Content="{x:Static properties:Resources.CBItemLIFO}"/>
                 <ComboBoxItem Content="{x:Static properties:Resources.CBItemAscending}"/>
@@ -406,7 +414,12 @@
                 <ComboBoxItem Content="{x:Static properties:Resources.CBItemRandom}"/>
             </ComboBox>
         </Grid>
-        <GridSplitter x:Name="GridSplitter" Grid.Column="1" HorizontalAlignment="Stretch" Focusable="False" PreviewMouseLeftButtonUp="GridSplitter_PreviewMouseLeftButtonUp" PreviewMouseLeftButtonDown="GridSplitter_PreviewMouseLeftButtonDown"/>
+        <GridSplitter x:Name="GridSplitter" Grid.Column="3" HorizontalAlignment="Stretch" Focusable="False" PreviewMouseLeftButtonUp="GridSplitter_PreviewMouseLeftButtonUp" PreviewMouseLeftButtonDown="GridSplitter_PreviewMouseLeftButtonDown"/>
+        <GridSplitter x:Name="GridSplitter0" Grid.Column="1" HorizontalAlignment="Stretch" Focusable="False" PreviewMouseLeftButtonUp="GridSplitter0_PreviewMouseLeftButtonUp" PreviewMouseLeftButtonDown="GridSplitter0_PreviewMouseLeftButtonDown"/>
+        <Grid Grid.Column="0" Height="60" VerticalAlignment="Top">
+            <TextBlock TextWrapping="Wrap" Text="00:00" FontFamily="Arial" FontSize="48" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Grid>
+        <Slider Margin="10,65,10,0" VerticalAlignment="Top"/>
 
     </Grid>
 </Window>
